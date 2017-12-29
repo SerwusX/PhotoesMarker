@@ -28,6 +28,11 @@ public class PhotoesSorter {
         List<Pair<String, ExifInterface>> listOfPairsOfPathsAndExifs = new ArrayList<>();
         List<String> sortedList;
 
+        if(listOfPaths.isEmpty()){
+            sortedList = new ArrayList<>();
+            return sortedList;
+        }
+
         for (String e : listOfPaths){
             ExifInterface exif = new ExifInterface(e);
             Pair<String, ExifInterface> pair = new Pair<>(e, exif);
