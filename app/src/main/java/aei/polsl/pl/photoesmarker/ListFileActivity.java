@@ -129,9 +129,13 @@ public class ListFileActivity extends Activity {
         sManager.registerListener(mySensorEventListener, sManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),SensorManager.SENSOR_DELAY_NORMAL);
 
         // domyslna sciezka po uruchomieniu aplikacji
-        path = "/sdcard";
+        path = PathAcquirer.getCurrentPathStr(ListFileActivity.this);
+        if(path == null){
+            path = "/sdcard";
+        }
         if (getIntent().hasExtra("path")) { //pobieranie wartosci sciezki z poprzedniej aktywnosci
             path = getIntent().getStringExtra("path");
+            PathAcquirer.updateCurrentPath(ListFileActivity.this, path);
         }
         setTitle(path);
 
