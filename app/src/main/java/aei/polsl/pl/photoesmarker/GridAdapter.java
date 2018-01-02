@@ -3,25 +3,17 @@ package aei.polsl.pl.photoesmarker;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.List;
 
 /**
@@ -54,18 +46,20 @@ class GridAdapter extends BaseAdapter {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
-    public View getView(int position, View view, ViewGroup viewGroup) {
+    public View getView(int position, View convertView, ViewGroup viewGroup) {
         File currentFile = (File) listOfItems.get(position);
-
-        if (view == null) {
-            final LayoutInflater layoutInflater = LayoutInflater.from(context);
-            view = layoutInflater.inflate(R.layout.grid_cell, null);
-
+        ImageView imageThumbnail;
+        TextView filename;
+        View gridView;
+        final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (convertView == null) {
+            gridView = new View(context);
+            gridView = layoutInflater.inflate(R.layout.grid_cell, null);
             // if it's not recycled, initialize some attributes
-            ImageView imageThumbnail = view.findViewById(R.id.imageThumbnail);
-            TextView filename = view.findViewById(R.id.filepath);
+            imageThumbnail = gridView.findViewById(R.id.imageThumbnail);
+            filename = gridView.findViewById(R.id.filepath);
 
-            if (currentFile.isDirectory()) { // wyswietlanie ikony folderu
+        if (currentFile.isDirectory()) { // wyswietlanie ikony folderu
                 imageThumbnail.setImageDrawable(context.getResources().getDrawable(R.drawable.foldericon));
                 ViewGroup.LayoutParams params = imageThumbnail.getLayoutParams();
                 params.width = 50;
@@ -74,8 +68,8 @@ class GridAdapter extends BaseAdapter {
             } else if (currentFile.isFile()) { // wyswietlanie miniatury obrazu
 
                 ViewGroup.LayoutParams params = imageThumbnail.getLayoutParams();
-                params.width = 400;
-                params.height = 400;
+                params.width = 300;
+                params.height = 300;
                 imageThumbnail.requestLayout();
 
                 if (imageThumbnail.getTag() != null) {
@@ -87,17 +81,18 @@ class GridAdapter extends BaseAdapter {
 
             }
             filename.setText(((File) listOfItems.get(position)).getName());
+        } else{
+            gridView = convertView;
         }
-        return view;
+        return gridView;
 
     }
 
     private class ImageGetter extends AsyncTask<String, Void, Bitmap> {
-        private ImageView iv;
-        final int THUMBSIZE = 512;
+        private ImageView imageView;
 
         public ImageGetter(ImageView v) {
-            iv = v;
+            imageView = v;
         }
 
         @Override
@@ -108,10 +103,10 @@ class GridAdapter extends BaseAdapter {
             int photoW = bmOptions.outWidth;
             int photoH = bmOptions.outHeight;
 
-// Determine how much to scale down the image
+        // Determine how much to scale down the image
             int scaleFactor = Math.min(photoW/100, photoH/100);
 
-// Decode the image file into a Bitmap sized to fill the View
+        // Decode the image file into a Bitmap sized to fill the View
             bmOptions.inJustDecodeBounds = false;
             bmOptions.inSampleSize = scaleFactor;
             bmOptions.inPurgeable = true;
@@ -122,9 +117,10 @@ class GridAdapter extends BaseAdapter {
         @Override
         protected void onPostExecute(Bitmap result) {
             super.onPostExecute(result);
-            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            iv.setPadding(8, 8, 8, 8);
-            iv.setImageBitmap(result);        }
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            imageView.setPadding(8, 8, 8, 8);
+            imageView.setImageBitmap(result);
+        }
     }
 }
 

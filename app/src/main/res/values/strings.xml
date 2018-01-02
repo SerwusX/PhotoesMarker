@@ -4,4 +4,5 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="doGory">Do góry</string>
+    <string name="title_activity_image_view">ImageViewActivity</string>
 </resources>
