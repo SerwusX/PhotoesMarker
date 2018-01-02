@@ -8,7 +8,7 @@
     tools:layout_editor_absoluteY="81dp">
 
     <SeekBar
-        android:id="@+id/seekBar1"
+        android:id="@+id/rating"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toBottomOf="@+id/podpis2" />
 
     <SeekBar
-        android:id="@+id/seekBar2"
+        android:id="@+id/quality"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="17dp"
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="89dp"
         android:gravity="center"
-        android:text="Pierwsza ocena"
+        android:text="Rating"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -44,23 +44,23 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:gravity="center"
-        android:text="Druga ocena"
+        android:text="Quality"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ocena1" />
+        app:layout_constraintTop_toBottomOf="@+id/ratingValue" />
 
     <TextView
-        android:id="@+id/ocena1"
+        android:id="@+id/ratingValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="TextView"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar2" />
+        app:layout_constraintTop_toBottomOf="@+id/quality" />
 
     <TextView
-        android:id="@+id/ocena2"
+        android:id="@+id/qualityValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
@@ -68,7 +68,7 @@
         android:gravity="center"
         android:text="TextView"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar1" />
+        app:layout_constraintTop_toBottomOf="@+id/rating" />
 
     <Button
         android:id="@+id/buttonOk"
@@ -78,5 +78,5 @@
         android:text="OK"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ocena2" />
+        app:layout_constraintTop_toBottomOf="@+id/qualityValue" />
 </android.support.constraint.ConstraintLayout>

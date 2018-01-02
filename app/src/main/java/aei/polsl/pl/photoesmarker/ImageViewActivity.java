@@ -52,18 +52,18 @@ public class ImageViewActivity extends AppCompatActivity {
         final Dialog dialog = new Dialog(ImageViewActivity.this);
         dialog.setContentView(R.layout.activity_assessment);
         dialog.setTitle("Oceń zdjęcia");
-        final SeekBar seekBar1 = dialog.findViewById(R.id.seekBar1);
-        final SeekBar seekBar2 = dialog.findViewById(R.id.seekBar2);
-        final TextView ocena1 =  dialog.findViewById(R.id.ocena2);
-        final TextView ocena2 =  dialog.findViewById(R.id.ocena1);
+        final SeekBar rating = dialog.findViewById(R.id.rating);
+        final SeekBar quality = dialog.findViewById(R.id.quality);
+        final TextView qualityValue =  dialog.findViewById(R.id.qualityValue);
+        final TextView ratingValue =  dialog.findViewById(R.id.ratingValue);
         final Button buttonOk =  dialog.findViewById(R.id.buttonOk);
-        seekBar1.setProgress(50);
-        seekBar2.setProgress(50);
+        rating.setProgress(50);
+        quality.setProgress(50);
 
-        ocena1.setText(String.valueOf(seekBar1.getProgress()));
-        ocena2.setText(String.valueOf(seekBar1.getProgress()));
+        qualityValue.setText(String.valueOf(rating.getProgress()));
+        ratingValue.setText(String.valueOf(rating.getProgress()));
 
-        seekBar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        rating.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -81,11 +81,11 @@ public class ImageViewActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
 
-                ocena1.setText(String.valueOf(progress));
+                qualityValue.setText(String.valueOf(progress));
 
             }
         });
-        seekBar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        quality.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -103,7 +103,7 @@ public class ImageViewActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
 
-                ocena2.setText(String.valueOf(progress));
+                ratingValue.setText(String.valueOf(progress));
 
             }
         });
@@ -111,8 +111,11 @@ public class ImageViewActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                Log.d("Wartosc pierwszej oceny", String.valueOf(seekBar1.getProgress()));
-                Log.d("Wartosc drugiej oceny", String.valueOf(seekBar2.getProgress()));
+                Log.d("Wartosc pierwszej oceny", String.valueOf(rating.getProgress()));
+                Log.d("Wartosc drugiej oceny", String.valueOf(quality.getProgress()));
+
+                PhotoEvaluator.ratePhoto(pathToJpg, rating.getProgress(), quality.getProgress());
+
                 dialog.dismiss();
             }
         });
