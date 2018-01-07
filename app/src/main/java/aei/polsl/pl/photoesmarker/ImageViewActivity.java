@@ -42,6 +42,14 @@ public class ImageViewActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeFile(pathToJpg, bmOptions);
         imageView.setImageBitmap(bitmap);
 
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                ListFileActivity.exifDialog(ImageViewActivity.this, pathToJpg);
+                return true;
+            }
+        });
+
     }
     public void onClickPowrot(View v) {
         Intent intent = new Intent(ImageViewActivity.this, ListFileActivity.class);

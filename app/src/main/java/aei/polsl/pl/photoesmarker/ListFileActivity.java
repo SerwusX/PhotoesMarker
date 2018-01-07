@@ -3,6 +3,7 @@ package aei.polsl.pl.photoesmarker;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -10,18 +11,24 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +48,11 @@ public class ListFileActivity extends Activity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+    private List values; //docelowa lista przekazywana do grida
+    private List pictures; //lista z obrazkami
+    private List directories; //lista z folderami
+    GridAdapter gridAdapter;
+    private SortingTag sortingTag;
 
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -120,9 +132,9 @@ public class ListFileActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.grid_activity);
-        List values = new ArrayList(); //docelowa lista przekazywana do grida
-        List pictures = new ArrayList(); //lista z obrazkami
-        List directories = new ArrayList(); //lista z folderami
+        values = new ArrayList(); //docelowa lista przekazywana do grida
+        pictures = new ArrayList(); //lista z obrazkami
+        directories = new ArrayList(); //lista z folderami
         verifyStoragePermissions(this);
         sManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
         sManager.registerListener(mySensorEventListener, sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_NORMAL);
@@ -168,7 +180,8 @@ public class ListFileActivity extends Activity {
         values.addAll(pictures);
         // Put the data into the list
         final GridView gridview = (GridView) findViewById(R.id.gridview);
-        gridview.setAdapter(new GridAdapter(this, values));
+        gridAdapter = new GridAdapter(this, values);
+        gridview.setAdapter(gridAdapter);
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -194,14 +207,75 @@ public class ListFileActivity extends Activity {
         gridview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() { //pokazywanie Exifu
 
             public boolean onItemLongClick(AdapterView<?> parent, View v,
-                                           int position, long id) {
-                Log.d("LongClick","in onLongClick");
-                String str = gridview.getItemAtPosition(position).toString();
-
-                Log.d("LongClick","long click : " +str);
+                                           int position, long id) { //wyswietlanie Exifu
+                File filename = (File) gridview.getItemAtPosition(position);
+                String filenameString = filename.getName();
+                if (path.endsWith(File.separator)) {
+                    filenameString = path + filenameString;
+                } else {
+                    filenameString = path + File.separator + filenameString;
+                }
+                if (new File(filenameString).isDirectory()) { //przechodzenie do wybranego folderu
+                    Toast.makeText(ListFileActivity.this, "Folder nie ma EXIFA!", Toast.LENGTH_LONG).show();
+                } else { // wyswietlanie Exifu
+                    ListFileActivity.exifDialog(ListFileActivity.this, filenameString);
+                }
                 return true;
             }
         });
+    }
+
+    private static List<String> exifGridViewBuilder(String filenameString) {
+        List<String> tempList = new ArrayList<>();
+        tempList.add("Nazwa");
+        tempList.add(PhotoMarker.getNameStr(filenameString));
+        tempList.add("Szerokość geograficzna");
+        tempList.add(PhotoMarker.getLatitudeStr(filenameString));
+        tempList.add("Długość geograficzna");
+        tempList.add(PhotoMarker.getLongitudeStr(filenameString));
+        tempList.add("Orientacja");
+        tempList.add(PhotoMarker.getOrientationStr(filenameString));
+        tempList.add("Data");
+        tempList.add(PhotoMarker.getDateTimeStr(filenameString));
+        tempList.add("Wysokość");
+        tempList.add(PhotoMarker.getAltitudeStr(filenameString));
+        tempList.add("Długość zdjęcia");
+        tempList.add(PhotoMarker.getPhotoLengthStr(filenameString));
+        tempList.add("Szerokość zdjęcia");
+        tempList.add(PhotoMarker.getPhotoWidthStr(filenameString));
+        tempList.add("Jakość");
+        tempList.add(PhotoMarker.getPhotoQualityStr(filenameString));
+        tempList.add("Ocena");
+        tempList.add(PhotoMarker.getPhotoRatingStr(filenameString));
+        tempList.add("Średnia oceny i jakości");
+        tempList.add(PhotoMarker.getAverageOfRatingAndQualityStr(filenameString));
+        tempList.add("Wartość żyroskopu z osi Z");
+        tempList.add(PhotoMarker.getGyroZValueStr(filenameString));
+        tempList.add("Wartość żyroskopu z osi Y");
+        tempList.add(PhotoMarker.getGyroYValueStr(filenameString));
+        tempList.add("Wartość żyroskopu z osi X");
+        tempList.add(PhotoMarker.getGyroXValueStr(filenameString));
+
+        return tempList;
+    }
+    public static void exifDialog(Context context, String filenameString){
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.exif_dialog);
+        dialog.setTitle("EXIF");
+        final GridView exifGridView = dialog.findViewById(R.id.exifGridView);
+        List<String> listaStringow = exifGridViewBuilder(filenameString);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
+                android.R.layout.simple_list_item_1, listaStringow);
+        exifGridView.setAdapter(adapter);
+        final Button buttonExifOk = dialog.findViewById(R.id.buttonExifOk);
+
+        buttonExifOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
     public void onClickDoGory(View v){ //przechodzenie do rodzica
         if(!path.equals("/")) {
@@ -212,8 +286,60 @@ public class ListFileActivity extends Activity {
         }
     }
     public void onClickSortowanie(View v){ //wyswietlanie sposobu sortowania
+        final Dialog dialog = new Dialog(ListFileActivity.this);
+        dialog.setContentView(R.layout.activity_sort);
+        dialog.setTitle("Sortowanie");
+        final RadioGroup radioSortowanie = dialog.findViewById(R.id.radioGroup);
+        final Button buttonSortowanie = dialog.findViewById(R.id.sortowanieOk);
+        buttonSortowanie.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                radioSortowanie.check(R.id.radioName);
+                int selectedId = radioSortowanie.getCheckedRadioButtonId();
+                RadioButton wybranyButton = dialog.findViewById(selectedId);
+                Toast.makeText(ListFileActivity.this,
+                        wybranyButton.getContentDescription(), Toast.LENGTH_SHORT).show();
+                try {
+                    sortingTag = SortingTag.valueOf((String) wybranyButton.getContentDescription());
+                }catch (IllegalArgumentException e){
+                    e.printStackTrace();
+                }
+                List stringPictures = convertListOfFilesToString(pictures);
+                // sortowanie zdjec
+                try {
+                    stringPictures = PhotoesSorter.sortListOfPhotoes(stringPictures, sortingTag);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                pictures = convertListOfStringsToFiles(stringPictures);
+                values.clear();
+                values.addAll(directories);
+                values.addAll(pictures);
 
+                gridAdapter.notifyDataSetChanged(); //refreshing grid view
+                dialog.dismiss();
+
+            }
+        });
+        dialog.show();
     }
+
+    private List<File> convertListOfStringsToFiles(List<String> stringPictures) {
+        List<File> files = new ArrayList<>();
+        for (String picture: stringPictures) {
+           files.add(new File(picture));
+        }
+        return files;
+    }
+
+    private List<String> convertListOfFilesToString(List<File> pictures) {
+        List<String> listOfStrings = new ArrayList<>();
+        for (File pictureFile: pictures) {
+            listOfStrings.add(pictureFile.getAbsolutePath());
+        }
+        return listOfStrings;
+    }
+
     public void onClickWlaczenieAparatu(View v){ //wlaczenie aparatu
         CameraManager cameraManager = new CameraManager();
         cameraManager.takePhoto(this, this);

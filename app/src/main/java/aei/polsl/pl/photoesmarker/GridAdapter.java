@@ -29,6 +29,15 @@ class GridAdapter extends BaseAdapter {
         this.listOfItems = listOfItems;
     }
 
+    public List getListOfItems() {
+        return listOfItems;
+    }
+
+    public void setListOfItems(List listOfItems) {
+        this.listOfItems = listOfItems;
+    }
+
+
     @Override
     public int getCount() {
         return listOfItems.size();
@@ -59,7 +68,7 @@ class GridAdapter extends BaseAdapter {
             imageThumbnail = gridView.findViewById(R.id.imageThumbnail);
             filename = gridView.findViewById(R.id.filepath);
 
-        if (currentFile.isDirectory()) { // wyswietlanie ikony folderu
+            if (currentFile.isDirectory()) { // wyswietlanie ikony folderu
                 imageThumbnail.setImageDrawable(context.getResources().getDrawable(R.drawable.foldericon));
                 ViewGroup.LayoutParams params = imageThumbnail.getLayoutParams();
                 params.width = 50;
@@ -81,7 +90,7 @@ class GridAdapter extends BaseAdapter {
 
             }
             filename.setText(((File) listOfItems.get(position)).getName());
-        } else{
+        } else {
             gridView = convertView;
         }
         return gridView;
@@ -103,10 +112,10 @@ class GridAdapter extends BaseAdapter {
             int photoW = bmOptions.outWidth;
             int photoH = bmOptions.outHeight;
 
-        // Determine how much to scale down the image
-            int scaleFactor = Math.min(photoW/100, photoH/100);
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / 100, photoH / 100);
 
-        // Decode the image file into a Bitmap sized to fill the View
+            // Decode the image file into a Bitmap sized to fill the View
             bmOptions.inJustDecodeBounds = false;
             bmOptions.inSampleSize = scaleFactor;
             bmOptions.inPurgeable = true;
