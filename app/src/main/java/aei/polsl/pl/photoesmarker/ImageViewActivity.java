@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,10 +16,18 @@ import android.widget.TextView;
 
 import java.io.File;
 
+/**
+ * @author Mateusz T
+ * Aktywnosc wyswietlajaca klikniete zdjecie.
+ * W niej istnieje też możliwość oceniania zdjęcia.
+ */
 public class ImageViewActivity extends AppCompatActivity {
     String pathToJpg;
+    private MediaPlayer mediaPlayer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.engineer_equip4);
+        this.mediaPlayer = mediaPlayer;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_activity);
         Intent intent = getIntent();
@@ -45,6 +54,7 @@ public class ImageViewActivity extends AppCompatActivity {
         imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                ListFileActivity.generujDzwiek(mediaPlayer);
                 ListFileActivity.exifDialog(ImageViewActivity.this, pathToJpg);
                 return true;
             }
@@ -52,11 +62,13 @@ public class ImageViewActivity extends AppCompatActivity {
 
     }
     public void onClickPowrot(View v) {
+        ListFileActivity.generujDzwiek(mediaPlayer);
         Intent intent = new Intent(ImageViewActivity.this, ListFileActivity.class);
         intent.putExtra("path", new File(pathToJpg).getParent());
         startActivity(intent);
     }
     public void onClickOcenianie(View v){ //ocenianie zdjecia
+        ListFileActivity.generujDzwiek(mediaPlayer);
         final Dialog dialog = new Dialog(ImageViewActivity.this);
         dialog.setContentView(R.layout.activity_assessment);
         dialog.setTitle("Oceń zdjęcia");
@@ -74,38 +86,24 @@ public class ImageViewActivity extends AppCompatActivity {
         rating.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
 
                 qualityValue.setText(String.valueOf(progress));
 
             }
-        });
-        quality.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-
-            }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
 
             }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        quality.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
@@ -114,13 +112,22 @@ public class ImageViewActivity extends AppCompatActivity {
                 ratingValue.setText(String.valueOf(progress));
 
             }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
         });
         buttonOk.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                Log.d("Wartosc pierwszej oceny", String.valueOf(rating.getProgress()));
-                Log.d("Wartosc drugiej oceny", String.valueOf(quality.getProgress()));
+                ListFileActivity.generujDzwiek(mediaPlayer);
 
                 PhotoEvaluator.ratePhoto(pathToJpg, rating.getProgress(), quality.getProgress());
 

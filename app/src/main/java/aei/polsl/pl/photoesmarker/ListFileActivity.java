@@ -10,29 +10,28 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author Mateusz T
+ * Główna aktywność, w ktorej poruszamy się po drzewie folderów i zdjęć.
+ */
 public class ListFileActivity extends Activity {
 
     private String path;
@@ -53,6 +52,9 @@ public class ListFileActivity extends Activity {
     private List directories; //lista z folderami
     GridAdapter gridAdapter;
     private SortingTag sortingTag;
+    public static boolean tutorial = false;
+    private MediaPlayer mediaPlayer;
+
 
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -132,6 +134,8 @@ public class ListFileActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.grid_activity);
+        MediaPlayer media = MediaPlayer.create(ListFileActivity.this, R.raw.engineer_equip4);
+        mediaPlayer = media;
         values = new ArrayList(); //docelowa lista przekazywana do grida
         pictures = new ArrayList(); //lista z obrazkami
         directories = new ArrayList(); //lista z folderami
@@ -139,7 +143,6 @@ public class ListFileActivity extends Activity {
         sManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
         sManager.registerListener(mySensorEventListener, sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_NORMAL);
         sManager.registerListener(mySensorEventListener, sManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),SensorManager.SENSOR_DELAY_NORMAL);
-
         // domyslna sciezka po uruchomieniu aplikacji
         path = PathAcquirer.getCurrentPathStr(ListFileActivity.this);
         if(path == null){
@@ -218,6 +221,7 @@ public class ListFileActivity extends Activity {
                 if (new File(filenameString).isDirectory()) { //przechodzenie do wybranego folderu
                     Toast.makeText(ListFileActivity.this, "Folder nie ma EXIFA!", Toast.LENGTH_LONG).show();
                 } else { // wyswietlanie Exifu
+                    generujDzwiek(mediaPlayer);
                     ListFileActivity.exifDialog(ListFileActivity.this, filenameString);
                 }
                 return true;
@@ -277,7 +281,9 @@ public class ListFileActivity extends Activity {
         });
         dialog.show();
     }
+
     public void onClickDoGory(View v){ //przechodzenie do rodzica
+        generujDzwiek(mediaPlayer);
         if(!path.equals("/")) {
             Intent intent = new Intent(ListFileActivity.this, ListFileActivity.class);
             intent.putExtra("path", dir.getParent());
@@ -286,6 +292,7 @@ public class ListFileActivity extends Activity {
         }
     }
     public void onClickSortowanie(View v){ //wyswietlanie sposobu sortowania
+        generujDzwiek(mediaPlayer);
         final Dialog dialog = new Dialog(ListFileActivity.this);
         dialog.setContentView(R.layout.activity_sort);
         dialog.setTitle("Sortowanie");
@@ -294,6 +301,7 @@ public class ListFileActivity extends Activity {
         buttonSortowanie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                generujDzwiek(mediaPlayer);
                 radioSortowanie.check(R.id.radioName);
                 int selectedId = radioSortowanie.getCheckedRadioButtonId();
                 RadioButton wybranyButton = dialog.findViewById(selectedId);
@@ -341,7 +349,30 @@ public class ListFileActivity extends Activity {
     }
 
     public void onClickWlaczenieAparatu(View v){ //wlaczenie aparatu
+        generujDzwiek(mediaPlayer);
         CameraManager cameraManager = new CameraManager();
         cameraManager.takePhoto(this, this);
+    }
+
+    public static void generujDzwiek(MediaPlayer mediaPlayer) {
+        if(tutorial == true){
+            mediaPlayer.start();
+        }else{
+            mediaPlayer.stop();
+        }
+    }
+
+    public void onClickTutorial(View view){
+        if(tutorial == false){
+            Toast.makeText(ListFileActivity.this, "Włączono tutorial", Toast.LENGTH_SHORT).show();
+            tutorial = true;
+            mediaPlayer.start();
+        }else{
+            tutorial = false;
+            Toast.makeText(ListFileActivity.this, "Wyłączono tutorial", Toast.LENGTH_SHORT).show();
+            mediaPlayer.stop();
+        }
+
+
     }
 }

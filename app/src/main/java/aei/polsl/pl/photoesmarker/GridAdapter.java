@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * Created by Mateusz on 2017-12-25.
+ * Własny adapter generowanej tablicy  folderów i zdjęć.
  */
 
 class GridAdapter extends BaseAdapter {
