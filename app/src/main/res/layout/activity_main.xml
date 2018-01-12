@@ -24,12 +24,12 @@
         android:layout_marginEnd="148dp"
         android:layout_marginStart="148dp"
         android:layout_marginTop="113dp"
-        android:text="Camera"
+        android:onClick="onClick"
+        android:text="BUTTON"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        android:onClick="onClick"/>
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

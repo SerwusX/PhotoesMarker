@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
         CameraManager cameraManager = new CameraManager();
         cameraManager.moveFileToWorkingLocationAndMarkIfExists(this, azimuth, pitch, roll);
+
+        SoundPlayer.setContextAndSound(this, R.raw.fake_tutorial);
     }
 
     @Override
@@ -116,10 +118,12 @@ public class MainActivity extends AppCompatActivity {
     };
     ////////////////////////////////////////////////////////////////////////////////////
 
-    public void onClick(View v) {
 
-        CameraManager cameraManager = new CameraManager();
-        cameraManager.takePhoto(this, this);
+
+    public void onClick(View v) {
+        SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
+        //CameraManager cameraManager = new CameraManager();
+        //cameraManager.takePhoto(this, this);
     }
 
 }
