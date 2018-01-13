@@ -33,7 +33,7 @@ import java.util.List;
  * Główna aktywność, w ktorej poruszamy się po drzewie folderów i zdjęć.
  */
 public class ListFileActivity extends Activity {
-
+    public static boolean shouldPlayFakeTutorial = false;
     private String path;
     private File dir;
     SensorManager sManager;
@@ -221,12 +221,12 @@ public class ListFileActivity extends Activity {
                 if (new File(filenameString).isDirectory()) { //przechodzenie do wybranego folderu
                     Toast.makeText(ListFileActivity.this, "Folder nie ma EXIFA!", Toast.LENGTH_LONG).show();
                 } else { // wyswietlanie Exifu
-                    generujDzwiek(mediaPlayer);
                     ListFileActivity.exifDialog(ListFileActivity.this, filenameString);
                 }
                 return true;
             }
         });
+        SoundPlayer.setContextAndSound(this, R.raw.fake_tutorial);
     }
 
     private static List<String> exifGridViewBuilder(String filenameString) {
@@ -283,53 +283,58 @@ public class ListFileActivity extends Activity {
     }
 
     public void onClickDoGory(View v){ //przechodzenie do rodzica
-        generujDzwiek(mediaPlayer);
-        if(!path.equals("/")) {
-            Intent intent = new Intent(ListFileActivity.this, ListFileActivity.class);
-            intent.putExtra("path", dir.getParent());
-            startActivity(intent);
+        if(shouldPlayFakeTutorial)
+            SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
+        else {
+            if (!path.equals("/")) {
+                Intent intent = new Intent(ListFileActivity.this, ListFileActivity.class);
+                intent.putExtra("path", dir.getParent());
+                startActivity(intent);
 
+            }
         }
     }
     public void onClickSortowanie(View v){ //wyswietlanie sposobu sortowania
-        generujDzwiek(mediaPlayer);
-        final Dialog dialog = new Dialog(ListFileActivity.this);
-        dialog.setContentView(R.layout.activity_sort);
-        dialog.setTitle("Sortowanie");
-        final RadioGroup radioSortowanie = dialog.findViewById(R.id.radioGroup);
-        final Button buttonSortowanie = dialog.findViewById(R.id.sortowanieOk);
-        buttonSortowanie.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                generujDzwiek(mediaPlayer);
-                radioSortowanie.check(R.id.radioName);
-                int selectedId = radioSortowanie.getCheckedRadioButtonId();
-                RadioButton wybranyButton = dialog.findViewById(selectedId);
-                Toast.makeText(ListFileActivity.this,
-                        wybranyButton.getContentDescription(), Toast.LENGTH_SHORT).show();
-                try {
-                    sortingTag = SortingTag.valueOf((String) wybranyButton.getContentDescription());
-                }catch (IllegalArgumentException e){
-                    e.printStackTrace();
-                }
-                List stringPictures = convertListOfFilesToString(pictures);
-                // sortowanie zdjec
-                try {
-                    stringPictures = PhotoesSorter.sortListOfPhotoes(stringPictures, sortingTag);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                pictures = convertListOfStringsToFiles(stringPictures);
-                values.clear();
-                values.addAll(directories);
-                values.addAll(pictures);
+        if(shouldPlayFakeTutorial)
+            SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
+        else {
+            final Dialog dialog = new Dialog(ListFileActivity.this);
+            dialog.setContentView(R.layout.activity_sort);
+            dialog.setTitle("Sortowanie");
+            final RadioGroup radioSortowanie = dialog.findViewById(R.id.radioGroup);
+            final Button buttonSortowanie = dialog.findViewById(R.id.sortowanieOk);
+            buttonSortowanie.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    radioSortowanie.check(R.id.radioName);
+                    int selectedId = radioSortowanie.getCheckedRadioButtonId();
+                    RadioButton wybranyButton = dialog.findViewById(selectedId);
+                    Toast.makeText(ListFileActivity.this,
+                            wybranyButton.getContentDescription(), Toast.LENGTH_SHORT).show();
+                    try {
+                        sortingTag = SortingTag.valueOf((String) wybranyButton.getContentDescription());
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+                    List stringPictures = convertListOfFilesToString(pictures);
+                    // sortowanie zdjec
+                    try {
+                        stringPictures = PhotoesSorter.sortListOfPhotoes(stringPictures, sortingTag);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    pictures = convertListOfStringsToFiles(stringPictures);
+                    values.clear();
+                    values.addAll(directories);
+                    values.addAll(pictures);
 
-                gridAdapter.notifyDataSetChanged(); //refreshing grid view
-                dialog.dismiss();
+                    gridAdapter.notifyDataSetChanged(); //refreshing grid view
+                    dialog.dismiss();
 
-            }
-        });
-        dialog.show();
+                }
+            });
+            dialog.show();
+        }
     }
 
     private List<File> convertListOfStringsToFiles(List<String> stringPictures) {
@@ -349,30 +354,23 @@ public class ListFileActivity extends Activity {
     }
 
     public void onClickWlaczenieAparatu(View v){ //wlaczenie aparatu
-        generujDzwiek(mediaPlayer);
-        CameraManager cameraManager = new CameraManager();
-        cameraManager.takePhoto(this, this);
-    }
-
-    public static void generujDzwiek(MediaPlayer mediaPlayer) {
-        if(tutorial == true){
-            mediaPlayer.start();
-        }else{
-            mediaPlayer.stop();
+        if(shouldPlayFakeTutorial)
+            SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
+        else {
+            CameraManager cameraManager = new CameraManager();
+            cameraManager.takePhoto(this, this);
         }
     }
 
     public void onClickTutorial(View view){
-        if(tutorial == false){
-            Toast.makeText(ListFileActivity.this, "Włączono tutorial", Toast.LENGTH_SHORT).show();
-            tutorial = true;
-            mediaPlayer.start();
-        }else{
-            tutorial = false;
-            Toast.makeText(ListFileActivity.this, "Wyłączono tutorial", Toast.LENGTH_SHORT).show();
-            mediaPlayer.stop();
+        if(shouldPlayFakeTutorial) {
+            shouldPlayFakeTutorial = false;
+            Toast.makeText(ListFileActivity.this, "Fake tutorial off", Toast.LENGTH_SHORT).show();
         }
-
+        else{
+            Toast.makeText(ListFileActivity.this, "Fake tutorial on", Toast.LENGTH_SHORT).show();
+            shouldPlayFakeTutorial = true;
+        }
 
     }
 }

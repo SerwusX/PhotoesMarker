@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#8b8cce"
     tools:context="aei.polsl.pl.photoesmarker.SortActivity"
     tools:layout_editor_absoluteX="16dp"
     tools:layout_editor_absoluteY="16dp">

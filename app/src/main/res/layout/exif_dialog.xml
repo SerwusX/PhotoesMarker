@@ -15,6 +15,7 @@
         android:layout_marginStart="8dp"
         android:numColumns="2"
         android:textAlignment="center"
+        android:background="#8b8cce"
         app:layout_constraintDimensionRatio="h,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

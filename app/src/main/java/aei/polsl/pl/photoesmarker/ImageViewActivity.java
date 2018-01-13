@@ -24,6 +24,7 @@ import java.io.File;
 public class ImageViewActivity extends AppCompatActivity {
     String pathToJpg;
     private MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.engineer_equip4);
@@ -54,87 +55,92 @@ public class ImageViewActivity extends AppCompatActivity {
         imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                ListFileActivity.generujDzwiek(mediaPlayer);
-                ListFileActivity.exifDialog(ImageViewActivity.this, pathToJpg);
-                return true;
+                if (ListFileActivity.shouldPlayFakeTutorial) {
+                    SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
+                    return true;
+                } else {
+                    ListFileActivity.exifDialog(ImageViewActivity.this, pathToJpg);
+                    return true;
+                }
             }
         });
 
     }
     public void onClickPowrot(View v) {
-        ListFileActivity.generujDzwiek(mediaPlayer);
         Intent intent = new Intent(ImageViewActivity.this, ListFileActivity.class);
         intent.putExtra("path", new File(pathToJpg).getParent());
         startActivity(intent);
     }
-    public void onClickOcenianie(View v){ //ocenianie zdjecia
-        ListFileActivity.generujDzwiek(mediaPlayer);
-        final Dialog dialog = new Dialog(ImageViewActivity.this);
-        dialog.setContentView(R.layout.activity_assessment);
-        dialog.setTitle("Oceń zdjęcia");
-        final SeekBar rating = dialog.findViewById(R.id.rating);
-        final SeekBar quality = dialog.findViewById(R.id.quality);
-        final TextView qualityValue =  dialog.findViewById(R.id.qualityValue);
-        final TextView ratingValue =  dialog.findViewById(R.id.ratingValue);
-        final Button buttonOk =  dialog.findViewById(R.id.buttonOk);
-        rating.setProgress(50);
-        quality.setProgress(50);
+    public void onClickOcenianie(View v) { //ocenianie zdjecia
+        if (ListFileActivity.shouldPlayFakeTutorial)
+            SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
+        else {
+            final Dialog dialog = new Dialog(ImageViewActivity.this);
+            dialog.setContentView(R.layout.activity_assessment);
+            dialog.setTitle("Oceń zdjęcia");
+            final SeekBar rating = dialog.findViewById(R.id.rating);
+            final SeekBar quality = dialog.findViewById(R.id.quality);
+            final TextView qualityValue = dialog.findViewById(R.id.qualityValue);
+            final TextView ratingValue = dialog.findViewById(R.id.ratingValue);
+            final Button buttonOk = dialog.findViewById(R.id.buttonOk);
+            rating.setProgress(50);
+            quality.setProgress(50);
 
-        qualityValue.setText(String.valueOf(rating.getProgress()));
-        ratingValue.setText(String.valueOf(rating.getProgress()));
+            qualityValue.setText(String.valueOf(rating.getProgress()));
+            ratingValue.setText(String.valueOf(rating.getProgress()));
 
-        rating.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            rating.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress,
+                                              boolean fromUser) {
 
-                qualityValue.setText(String.valueOf(progress));
+                    qualityValue.setText(String.valueOf(progress));
 
-            }
+                }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
 
-            }
+                }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
 
-            }
-        });
-        quality.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                }
+            });
+            quality.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress,
+                                              boolean fromUser) {
 
-                ratingValue.setText(String.valueOf(progress));
+                    ratingValue.setText(String.valueOf(progress));
 
-            }
+                }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
 
-            }
+                }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
 
-            }
-        });
-        buttonOk.setOnClickListener(new View.OnClickListener() {
+                }
+            });
+            buttonOk.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View view) {
-                ListFileActivity.generujDzwiek(mediaPlayer);
+                @Override
+                public void onClick(View view) {
 
-                PhotoEvaluator.ratePhoto(pathToJpg, rating.getProgress(), quality.getProgress());
+                    PhotoEvaluator.ratePhoto(pathToJpg, rating.getProgress(), quality.getProgress());
 
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
     }
 }
 

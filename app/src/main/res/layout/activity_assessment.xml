@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="17dp"
         android:max="100"
+        android:background="#8b8cce"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/podpis1" />
