@@ -54,7 +54,7 @@ public class ListFileActivity extends Activity {
     private SortingTag sortingTag;
     public static boolean tutorial = false;
     private MediaPlayer mediaPlayer;
-
+    private static int sortId;
 
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -129,10 +129,20 @@ public class ListFileActivity extends Activity {
         sManager.unregisterListener(mySensorEventListener);
         super.onStop();
     }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("sortId", sortId);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState == null){
+            sortId = R.id.radioName;
+        }else{
+            sortId = savedInstanceState.getInt("sortId");
+        }
         setContentView(R.layout.grid_activity);
         MediaPlayer media = MediaPlayer.create(ListFileActivity.this, R.raw.engineer_equip4);
         mediaPlayer = media;
@@ -302,15 +312,13 @@ public class ListFileActivity extends Activity {
             dialog.setContentView(R.layout.activity_sort);
             dialog.setTitle("Sortowanie");
             final RadioGroup radioSortowanie = dialog.findViewById(R.id.radioGroup);
+            radioSortowanie.check(sortId);
             final Button buttonSortowanie = dialog.findViewById(R.id.sortowanieOk);
             buttonSortowanie.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    radioSortowanie.check(R.id.radioName);
-                    int selectedId = radioSortowanie.getCheckedRadioButtonId();
-                    RadioButton wybranyButton = dialog.findViewById(selectedId);
-                    Toast.makeText(ListFileActivity.this,
-                            wybranyButton.getContentDescription(), Toast.LENGTH_SHORT).show();
+                    sortId = radioSortowanie.getCheckedRadioButtonId();
+                    RadioButton wybranyButton = dialog.findViewById(sortId);
                     try {
                         sortingTag = SortingTag.valueOf((String) wybranyButton.getContentDescription());
                     } catch (IllegalArgumentException e) {
@@ -365,10 +373,10 @@ public class ListFileActivity extends Activity {
     public void onClickTutorial(View view){
         if(shouldPlayFakeTutorial) {
             shouldPlayFakeTutorial = false;
-            Toast.makeText(ListFileActivity.this, "Fake tutorial off", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ListFileActivity.this, "Tutorial off", Toast.LENGTH_SHORT).show();
         }
         else{
-            Toast.makeText(ListFileActivity.this, "Fake tutorial on", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ListFileActivity.this, "Tutorial on", Toast.LENGTH_SHORT).show();
             shouldPlayFakeTutorial = true;
         }
 
