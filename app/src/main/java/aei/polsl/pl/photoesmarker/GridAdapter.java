@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,14 +32,6 @@ class GridAdapter extends BaseAdapter {
         this.listOfItems = listOfItems;
     }
 
-    public List getListOfItems() {
-        return listOfItems;
-    }
-
-    public void setListOfItems(List listOfItems) {
-        this.listOfItems = listOfItems;
-    }
-
 
     @Override
     public int getCount() {
@@ -46,7 +40,7 @@ class GridAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int i) {
-        return listOfItems.get(i);
+        return null;//listOfItems.get(i);
     }
 
     @Override
@@ -60,14 +54,11 @@ class GridAdapter extends BaseAdapter {
         File currentFile = (File) listOfItems.get(position);
         ImageView imageThumbnail;
         TextView filename;
-        View gridView;
-        final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
-            gridView = new View(context);
-            gridView = layoutInflater.inflate(R.layout.grid_cell, null);
-            // if it's not recycled, initialize some attributes
-            imageThumbnail = gridView.findViewById(R.id.imageThumbnail);
-            filename = gridView.findViewById(R.id.filepath);
+            convertView = LayoutInflater.from(context).inflate(R.layout.grid_cell, null);
+        }
+            imageThumbnail = convertView.findViewById(R.id.imageThumbnail);
+            filename = convertView.findViewById(R.id.filepath);
 
             if (currentFile.isDirectory()) { // wyswietlanie ikony folderu
                 imageThumbnail.setImageDrawable(context.getResources().getDrawable(R.drawable.foldericon));
@@ -81,20 +72,17 @@ class GridAdapter extends BaseAdapter {
                 params.width = 300;
                 params.height = 300;
                 imageThumbnail.requestLayout();
-
+                imageThumbnail.setImageDrawable(context.getResources().getDrawable(R.drawable.loading));
                 if (imageThumbnail.getTag() != null) {
                     ((ImageGetter) imageThumbnail.getTag()).cancel(true);
                 }
                 ImageGetter task = new ImageGetter(imageThumbnail);
                 task.execute(currentFile.getAbsolutePath());
                 imageThumbnail.setTag(task);
-
             }
             filename.setText(((File) listOfItems.get(position)).getName());
-        } else {
-            gridView = convertView;
-        }
-        return gridView;
+
+            return convertView;
 
     }
 
