@@ -608,12 +608,24 @@ public class PhotoesSorter {
 
             String sortedGyroValuesStr = lastElementOfSortedList.second.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
 
-            String[] parts1 = sortedGyroValuesStr.split(",");
+            String[] parts1;
 
-            double xOfLastElementOfSortedList = Double.parseDouble(parts1[0]);
-            double yOfLastElementOfSortedList = Double.parseDouble(parts1[1]);
-            double zOfLastElementOfSortedList = Double.parseDouble(parts1[2]);
+            double xOfLastElementOfSortedList;
+            double yOfLastElementOfSortedList;
+            double zOfLastElementOfSortedList;
 
+            try{
+                parts1 = sortedGyroValuesStr.split(",");
+
+                xOfLastElementOfSortedList = Double.parseDouble(parts1[0]);
+                yOfLastElementOfSortedList = Double.parseDouble(parts1[1]);
+                zOfLastElementOfSortedList = Double.parseDouble(parts1[2]);
+            }catch (NullPointerException e){
+                xOfLastElementOfSortedList = 1000.0;
+                yOfLastElementOfSortedList = 1000.0;
+                zOfLastElementOfSortedList = 1000.0;
+            }
+            
             String currentGyroValuesStr = currentMinElementOfList.second.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
 
             double xOfCurrentElement;
