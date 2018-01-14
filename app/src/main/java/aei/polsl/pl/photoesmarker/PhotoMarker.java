@@ -240,6 +240,8 @@ public class PhotoMarker {
             return "";
         } catch (NullPointerException e) {
             return "";
+        } catch (ArrayIndexOutOfBoundsException e){
+            return "";
         }
     }
 
@@ -254,6 +256,8 @@ public class PhotoMarker {
             return "";
         } catch (NullPointerException e) {
             return "";
+        } catch (ArrayIndexOutOfBoundsException e){
+            return "";
         }
     }
 
@@ -267,6 +271,8 @@ public class PhotoMarker {
             e.printStackTrace();
             return "";
         } catch (NullPointerException e) {
+            return "";
+        } catch (ArrayIndexOutOfBoundsException e){
             return "";
         }
     }

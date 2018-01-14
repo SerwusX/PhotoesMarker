@@ -10,19 +10,19 @@ import android.net.Uri;
 
 public class SoundPlayer {
 
-    private static MediaPlayer player;
+private static MediaPlayer player;
 
-    public static void setContextAndSound(Context context, int raw){
-        player = MediaPlayer.create(context, raw);
-    }
+public static void setContextAndSound(Context context, int raw){
+    player = MediaPlayer.create(context, raw);
+}
 
-    public static void playSoundOrStopPlayingIfAlreadyPlaying(){
-        if (player.isPlaying()){
-            player.stop();
-            player.prepareAsync();
-        }
-        else
-            player.start();
+public static void playSoundOrStopPlayingIfAlreadyPlaying(){
+    if (player.isPlaying()){
+        player.stop();
+        player.prepareAsync();
     }
+    else
+        player.start();
+}
 
 }
