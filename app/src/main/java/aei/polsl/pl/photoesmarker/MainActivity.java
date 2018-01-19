@@ -10,7 +10,12 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -121,9 +126,57 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onClick(View v) {
-        SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
+        //SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
         //CameraManager cameraManager = new CameraManager();
         //cameraManager.takePhoto(this, this);
+        test();
+    }
+
+    public void test(){
+        String currentPath = PathAcquirer.getCurrentPathStr(this);
+        List<String> pathStrings;
+        pathStrings = FilesLister.getListOfPathStringsOfFilesInDir(currentPath);
+        Tester.logPathStrings(pathStrings);
+        try{
+            Log.d("Sortowanie", "Ocena i jakosc");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.AVERAGE_RATING_AND_QUALITY);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Jakosc");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.QUALITY);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Ocena");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.RATING);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Zyroskop");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.GYROSCOPE);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Poziom morza");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.GPS_SEA_LEVEL);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "GPS");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.GPS_POSITION);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Powierzchnia zdjecia");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.PHOTO_AREA);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Szerokosc zdjecia");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.PHOTO_WIDTH);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Dlugosc zdjecia");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.PHOTO_LENGTH);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Data");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.DATE);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Nazwa");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.NAME);
+            Tester.logPathStrings(pathStrings);
+            Log.d("Sortowanie", "Orientacja");
+            pathStrings = PhotoesSorter.sortListOfPhotoes(pathStrings, SortingTag.ORIENTATION);
+            Tester.logPathStrings(pathStrings);
+        }catch(IOException e){
+            Log.d("Wyjatek w sortowaniu", e.getMessage());
+        }
     }
 
 }

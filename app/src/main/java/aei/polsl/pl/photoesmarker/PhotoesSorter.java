@@ -557,7 +557,7 @@ public class PhotoesSorter {
                 double y2;
                 double z2;
 
-                if(gyroValuesStr1 != null){
+                if(gyroValuesStr2 != null){
                     String[] parts2 = gyroValuesStr2.split(",");
                     x2 = Double.parseDouble(parts2[0]);
                     y2 = Double.parseDouble(parts2[1]);
@@ -625,7 +625,7 @@ public class PhotoesSorter {
                 yOfLastElementOfSortedList = 1000.0;
                 zOfLastElementOfSortedList = 1000.0;
             }
-            
+
             String currentGyroValuesStr = currentMinElementOfList.second.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
 
             double xOfCurrentElement;
