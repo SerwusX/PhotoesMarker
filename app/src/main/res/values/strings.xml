@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">PhotoesMarker</string>
+    <string name="app_name">Znakowanie zdjęć</string>
+    <string name="title_activity_browser">BrowserActivity</string>
+    <string name="action_choose_directory">Cofnij</string>
+    <string name="action_sorting_options">Opcje sortowania</string>
+    <string name="gallery">Galeria</string>
+    <string name="path_does_not_exist">Wybrana ścieżka nie istnieje lub nie może zostać odczytana!</string>
+    <string name="directory_is_empty">Brak katalogów</string>
+    <string name="current_directory">Obecny katalog: </string>
+    <string name="select">WYBIERZ</string>
+    <string name="image_path_string_to_show_in_viewer_activity">image_path</string>
 </resources>

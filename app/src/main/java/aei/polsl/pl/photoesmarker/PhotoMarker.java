@@ -150,7 +150,7 @@ public class PhotoMarker {
         return "";
     }
 
-    public static String getAltitudeStr(String imageFilePath){
+    private static String getAltitudeStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
             int altitude = exif.getAttributeInt(ExifInterface.TAG_GPS_LATITUDE, Integer.MAX_VALUE);

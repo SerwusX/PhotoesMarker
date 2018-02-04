@@ -3,6 +3,7 @@ package aei.polsl.pl.photoesmarker;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.support.v4.util.Pair;
+import android.util.Log;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -22,7 +23,7 @@ import java.util.Locale;
 public class PhotoesSorter {
 
     //Sortowanie
-    public static List<String> sortListOfPhotoes(List<String> listOfPaths, SortingTag sortingTag) throws IOException {
+    public static List<String> sortListOfPhotoes(List<String> listOfPaths, SortingTag sortingTag, boolean reverseSorting) throws IOException {
 
         //Lista zawierająca pary wartości: ścieżka - exif
         List<Pair<String, ExifInterface>> listOfPairsOfPathsAndExifs = new ArrayList<>();
@@ -78,6 +79,9 @@ public class PhotoesSorter {
                 sortedList = sortByName(listOfPairsOfPathsAndExifs);
                 break;
         }
+
+        if (reverseSorting)
+            Collections.reverse(sortedList);
 
         return sortedList;
     }
@@ -324,6 +328,8 @@ public class PhotoesSorter {
             sortedList.add(e.first);
         }
 
+
+
         return sortedList;
     }
 
@@ -356,10 +362,34 @@ public class PhotoesSorter {
             @Override
             public int compare(Pair<String, ExifInterface> pair1, Pair<String, ExifInterface> pair2) {
 
-                int seaLevel1 = pair1.second.getAttributeInt(ExifInterface.TAG_GPS_ALTITUDE, Integer.MAX_VALUE);
-                int seaLevel2 = pair2.second.getAttributeInt(ExifInterface.TAG_GPS_ALTITUDE, Integer.MAX_VALUE);
+                String stringAltitude1 = pair1.second.getAttribute(ExifInterface.TAG_GPS_ALTITUDE);
+                String stringAltitude2 = pair2.second.getAttribute(ExifInterface.TAG_GPS_ALTITUDE);
+                int seaLevel1 = Integer.MIN_VALUE;
+                int seaLevel2 = Integer.MIN_VALUE;
 
-                return seaLevel1 - seaLevel2;
+                if (!stringAltitude1.isEmpty()){
+                    stringAltitude1 = stringAltitude1.replaceAll("\\D+","");
+                    stringAltitude1 = stringAltitude1.replaceAll("\\s+","");
+                    try{
+                        seaLevel1 = Integer.getInteger(stringAltitude1);
+                    }catch (NullPointerException e){
+                        seaLevel1 = Integer.MIN_VALUE;
+                    }
+                }
+
+                if (!stringAltitude2.isEmpty()){
+                    stringAltitude2 = stringAltitude2.replaceAll("\\D+","");
+                    stringAltitude2 = stringAltitude2.replaceAll("\\s+","");
+                    try{
+                        seaLevel2 = Integer.getInteger(stringAltitude2);
+                    }catch (NullPointerException e){
+                        seaLevel2 = Integer.MIN_VALUE;
+                    }
+                }
+
+                Log.d("Sea Level 1", Integer.toString(seaLevel1));
+                Log.d("Sea Level 2", Integer.toString(seaLevel2));
+                return seaLevel2 - seaLevel1;
             }
         });
 
@@ -402,7 +432,7 @@ public class PhotoesSorter {
                 if (area2 == 0)
                     area2 = Long.MAX_VALUE;
 
-                return (int)(area2-area1);
+                return (int)(area1-area2);
             }
         });
 
@@ -439,7 +469,7 @@ public class PhotoesSorter {
                 if (width2 == 0)
                     width2 = Integer.MAX_VALUE;
 
-                return width2 - width1;
+                return width1 - width2;
             }
         });
 
@@ -477,7 +507,7 @@ public class PhotoesSorter {
                 if (length2 == 0)
                     length2 = Integer.MAX_VALUE;
 
-                return length2 - length1;
+                return length1 - length2;
             }
         });
 
@@ -533,13 +563,19 @@ public class PhotoesSorter {
 
                 if(gyroValuesStr1 != null){
                     String[] parts1 = gyroValuesStr1.split(",");
-                    x1 = Double.parseDouble(parts1[0]);
-                    y1 = Double.parseDouble(parts1[1]);
-                    z1 = Double.parseDouble(parts1[2]);
+                    try{
+                        x1 = Double.parseDouble(parts1[0]);
+                        y1 = Double.parseDouble(parts1[1]);
+                        z1 = Double.parseDouble(parts1[2]);
+                    }catch(NumberFormatException e){
+                        x1 = 0;
+                        y1 = 0;
+                        z1 = 0;
+                    }
                 }else{
-                    x1 = Double.MAX_VALUE;
-                    y1 = Double.MAX_VALUE;
-                    z1 = Double.MAX_VALUE;
+                    x1 = 0;
+                    y1 = 0;
+                    z1 = 0;
                 }
 
                 double distanceFromStartPoint1 = calculateDistanceBetweenTwoPointsIn3DSystem(
@@ -559,13 +595,20 @@ public class PhotoesSorter {
 
                 if(gyroValuesStr2 != null){
                     String[] parts2 = gyroValuesStr2.split(",");
-                    x2 = Double.parseDouble(parts2[0]);
-                    y2 = Double.parseDouble(parts2[1]);
-                    z2 = Double.parseDouble(parts2[2]);
+                    try{
+                        x2 = Double.parseDouble(parts2[0]);
+                        y2 = Double.parseDouble(parts2[1]);
+                        z2 = Double.parseDouble(parts2[2]);
+                    }catch(NumberFormatException e){
+                        x2 = 0;
+                        y2 = 0;
+                        z2 = 0;
+                    }
+
                 }else{
-                    x2 = Double.MAX_VALUE;
-                    y2 = Double.MAX_VALUE;
-                    z2 = Double.MAX_VALUE;
+                    x2 = 0;
+                    y2 = 0;
+                    z2 = 0;
                 }
 
                 double distanceFromStartPoint2 = calculateDistanceBetweenTwoPointsIn3DSystem(
@@ -621,9 +664,13 @@ public class PhotoesSorter {
                 yOfLastElementOfSortedList = Double.parseDouble(parts1[1]);
                 zOfLastElementOfSortedList = Double.parseDouble(parts1[2]);
             }catch (NullPointerException e){
-                xOfLastElementOfSortedList = 1000.0;
-                yOfLastElementOfSortedList = 1000.0;
-                zOfLastElementOfSortedList = 1000.0;
+                xOfLastElementOfSortedList = 0;
+                yOfLastElementOfSortedList = 0;
+                zOfLastElementOfSortedList = 0;
+            }catch (NumberFormatException e){
+                xOfLastElementOfSortedList = 0;
+                yOfLastElementOfSortedList = 0;
+                zOfLastElementOfSortedList = 0;
             }
 
             String currentGyroValuesStr = currentMinElementOfList.second.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
@@ -635,14 +682,20 @@ public class PhotoesSorter {
             if(currentGyroValuesStr != null){
                 parts2 = currentGyroValuesStr.split(",");
 
-                xOfCurrentElement = Double.parseDouble(parts2[0]);
-                yOfCurrentElement = Double.parseDouble(parts2[1]);
-                zOfCurrentElement = Double.parseDouble(parts2[2]);
+                try{
+                    xOfCurrentElement = Double.parseDouble(parts2[0]);
+                    yOfCurrentElement = Double.parseDouble(parts2[1]);
+                    zOfCurrentElement = Double.parseDouble(parts2[2]);
+                }catch (NumberFormatException e){
+                    xOfCurrentElement = 0;
+                    yOfCurrentElement = 0;
+                    zOfCurrentElement = 0;
+                }
             }
             else {
-                xOfCurrentElement = Double.MAX_VALUE;
-                yOfCurrentElement = Double.MAX_VALUE;
-                zOfCurrentElement = Double.MAX_VALUE;
+                xOfCurrentElement = 0;
+                yOfCurrentElement = 0;
+                zOfCurrentElement = 0;
             }
 
             double distanceOfPreviousElement = calculateDistanceBetweenTwoPointsIn3DSystem(
@@ -662,14 +715,20 @@ public class PhotoesSorter {
                 if(currentGyroValuesStr != null){
                     parts2 = currentGyroValuesStr.split(",");
 
-                    xOfCurrentElement = Double.parseDouble(parts2[0]);
-                    yOfCurrentElement = Double.parseDouble(parts2[1]);
-                    zOfCurrentElement = Double.parseDouble(parts2[2]);
+                    try{
+                        xOfCurrentElement = Double.parseDouble(parts2[0]);
+                        yOfCurrentElement = Double.parseDouble(parts2[1]);
+                        zOfCurrentElement = Double.parseDouble(parts2[2]);
+                    }catch (NumberFormatException e){
+                        xOfCurrentElement = 0;
+                        yOfCurrentElement = 0;
+                        zOfCurrentElement = 0;
+                    }
                 }
                 else {
-                    xOfCurrentElement = Double.MAX_VALUE;
-                    yOfCurrentElement = Double.MAX_VALUE;
-                    zOfCurrentElement = Double.MAX_VALUE;
+                    xOfCurrentElement = 0;
+                    yOfCurrentElement = 0;
+                    zOfCurrentElement = 0;
                 }
 
 
@@ -714,7 +773,7 @@ public class PhotoesSorter {
 
                 int rating1 = PhotoEvaluator.getPhotoRating(pair1.first);
                 int rating2 = PhotoEvaluator.getPhotoRating(pair2.first);
-                return rating2 - rating1;
+                return rating1 - rating2;
 
             }
         });
@@ -737,7 +796,7 @@ public class PhotoesSorter {
                 int quality1 = PhotoEvaluator.getPhotoQuality(pair1.first);
                 int quality2 = PhotoEvaluator.getPhotoQuality(pair2.first);
 
-                return quality2 - quality1;
+                return quality1 - quality2;
 
             }
         });
@@ -766,7 +825,7 @@ public class PhotoesSorter {
                 int average1 = (quality1 + rating1) / 2;
                 int average2 = (quality2 + rating2) / 2;
 
-                return average2 - average1;
+                return average1 - average2;
 
             }
         });

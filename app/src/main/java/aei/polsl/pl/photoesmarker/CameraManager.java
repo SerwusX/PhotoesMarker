@@ -17,12 +17,15 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import aei.polsl.pl.photoesmarker.PathAcquirer;
+import aei.polsl.pl.photoesmarker.PhotoMarker;
+
 /**
  * Created by Andrzej on 2017-12-28.
  */
 
 public class CameraManager {
-    static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_TAKE_PHOTO = 3;
 
     static String mCurrentPhotoPath;
 
@@ -30,7 +33,7 @@ public class CameraManager {
         Date currentTime = Calendar.getInstance().getTime();
         String timeStamp = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(currentTime);
         String imageFileName = "PHOTO_" + timeStamp;
-        PathAcquirer.resetCurrentPath(context);
+        //PathAcquirer.resetCurrentPath(context);
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
@@ -80,6 +83,8 @@ public class CameraManager {
                 File to = new File(PathAcquirer.getCurrentPathStr(context) + "/" + from.getName());
 
                 from.renameTo(to);
+
+                Log.d("Sciezka zdjecia: ", from.getAbsolutePath());
 
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 Uri contentUri = Uri.fromFile(from);
