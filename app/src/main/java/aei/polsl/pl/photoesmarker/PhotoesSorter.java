@@ -1,3 +1,6 @@
+//Klasa zawierająca zestaw funkcji do sortowania.
+//Tu są smoki!
+
 package aei.polsl.pl.photoesmarker;
 
 import android.graphics.BitmapFactory;
@@ -16,14 +19,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Created by Andrzej on 28.11.2017.
- */
 
-public class PhotoesSorter {
+class PhotoesSorter {
 
-    //Sortowanie
-    public static List<String> sortListOfPhotoes(List<String> listOfPaths, SortingTag sortingTag, boolean reverseSorting) throws IOException {
+    //wybiera metodę sortowania na podstawie parametrów i zwraca posorotowaną listę stringów ścieżek do zdjęć
+    static List<String> sortListOfPhotoes(List<String> listOfPaths, SortingTag sortingTag, boolean reverseSorting) throws IOException {
 
         //Lista zawierająca pary wartości: ścieżka - exif
         List<Pair<String, ExifInterface>> listOfPairsOfPathsAndExifs = new ArrayList<>();
@@ -86,7 +86,7 @@ public class PhotoesSorter {
         return sortedList;
     }
 
-    //Sortowanie po pozycji GPS - gotowe, do przetestowania
+    //Sortowanie po pozycji GPS
     private static List<String> sortByGPSPosition(List<Pair<String, ExifInterface>> list) {
 
         //Najpierw wstępne sortowania - szukamy punktu najbardziej wysuniętego na NW
@@ -252,7 +252,8 @@ public class PhotoesSorter {
         return sortedList;
     }
 
-    //Liczy odległość między dwoma punktami
+    //Liczy odległość między dwoma punktami w układzie dwuwymiarowym
+    //Potrzebne do sortowania według gpsa
     private static double calculateDistanceBetweenTwoPoints(double x1, double y1, double x2, double y2){
         return Math.sqrt(Math.pow((x2-x1), 2)+Math.pow((y2-y1), 2));
     }
@@ -287,7 +288,7 @@ public class PhotoesSorter {
         }
     }
 
-    //Sortowanie po dacie - gotowe, do przetestowania
+    //Sortowanie po dacie
     private static List<String> sortByDate(List<Pair<String, ExifInterface>> list){
         Collections.sort(list, new Comparator<Pair<String, ExifInterface>>() {
             @Override
@@ -333,7 +334,7 @@ public class PhotoesSorter {
         return sortedList;
     }
 
-    //Sortowanie po orientacji zdjęcia - gotowe, do przetestowania
+    //Sortowanie po orientacji zdjęcia
     private static List<String> sortByOrientation(List<Pair<String, ExifInterface>> list){
         Collections.sort(list, new Comparator<Pair<String, ExifInterface>>() {
             @Override
@@ -356,7 +357,8 @@ public class PhotoesSorter {
         return sortedList;
     }
 
-    //Sortowanie po poziomie nad poziomem morza - gotowe, do przetestowania
+    //Funkcja nieużywana, do przyszłych zastosowań
+    //Sortowanie po wysokości npm
     private static List<String> sortBySeaLevel(List<Pair<String, ExifInterface>> list){
         Collections.sort(list, new Comparator<Pair<String, ExifInterface>>() {
             @Override
@@ -386,9 +388,6 @@ public class PhotoesSorter {
                         seaLevel2 = Integer.MIN_VALUE;
                     }
                 }
-
-                Log.d("Sea Level 1", Integer.toString(seaLevel1));
-                Log.d("Sea Level 2", Integer.toString(seaLevel2));
                 return seaLevel2 - seaLevel1;
             }
         });
@@ -402,7 +401,7 @@ public class PhotoesSorter {
         return sortedList;
     }
 
-    //Sortowanie po rozdzielczości zdjęcia - gotowe, do przetestowania
+    //Sortowanie po rozdzielczości zdjęcia
     private static List<String> sortByPhotoArea(List<Pair<String, ExifInterface>> list){
         Collections.sort(list, new Comparator<Pair<String, ExifInterface>>() {
             @Override
@@ -445,7 +444,7 @@ public class PhotoesSorter {
         return sortedList;
     }
 
-    //Sortowanie po szerokości zdjęcia - gotowe, do przetestowania
+    //Sortowanie po szerokości zdjęcia
     private static List<String> sortByPhotoWidth(List<Pair<String, ExifInterface>> list){
         Collections.sort(list, new Comparator<Pair<String, ExifInterface>>() {
             @Override
@@ -482,7 +481,7 @@ public class PhotoesSorter {
         return sortedList;
     }
 
-    //Sortowanie po długości zdjęcia - gotowe, do przetestowania
+    //Sortowanie po długości zdjęcia
     private static List<String> sortByPhotoLength(List<Pair<String, ExifInterface>> list){
 
         Collections.sort(list, new Comparator<Pair<String, ExifInterface>>() {
@@ -520,7 +519,7 @@ public class PhotoesSorter {
         return sortedList;
     }
 
-    //Sortowanie po nazwie zdjęcia - gotowe, do przetestowania
+    //Sortowanie po nazwie zdjęcia
     private static List<String> sortByName(List<Pair<String, ExifInterface>> list){
 
         Collections.sort(list, new Comparator<Pair<String, ExifInterface>>() {
@@ -761,6 +760,7 @@ public class PhotoesSorter {
     }
 
     //Liczy odległość między dwoma punktami w przestrzeni trójwymiarowej
+    //Potrzebne do sortowania według żyroskopu
     private static double calculateDistanceBetweenTwoPointsIn3DSystem(double x1, double y1, double z1, double x2, double y2, double z2){
         return Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2) + Math.pow((z2-z1), 2));
     }

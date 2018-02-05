@@ -1,3 +1,5 @@
+//Klasa z zewnętrzenego repozytorium, creditsy w jednym ze sprawozdań
+
 package aei.polsl.pl.photoesmarker;
 
 //Heavily based on code from

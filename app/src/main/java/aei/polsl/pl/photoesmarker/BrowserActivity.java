@@ -1,3 +1,5 @@
+//Klasa aktywności galerii
+
 package aei.polsl.pl.photoesmarker;
 
 import android.Manifest;
@@ -11,7 +13,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,15 +29,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 public class BrowserActivity extends AppCompatActivity {
 
+    //zmienna z tagiem do sortowania, domyślnie przpisana
     SortingTag sortingTag = SortingTag.AVERAGE_RATING_AND_QUALITY;
+
+    //czy sortowanie ma być od największego do najmniejszego
     boolean reverseSorting = false;
+
+    //aktualnie zaznaczony element na liście sortowania z radiobuttonami
     int checkedItem;
 
+    //lista ze ściezkami do zdjęć
+    private List<String> listOfImages;
+
+    //wymagan pozwolenia dla aplikacji
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -45,6 +54,7 @@ public class BrowserActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
+    //weryfikuje pozwolenia dla aplikacji
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -71,22 +81,16 @@ public class BrowserActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Log.d("OBECNA ścieżka", PathAcquirer.getCurrentPathStr(this));
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
                 takePhoto();
             }
         });
         fab.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
                 SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
                 return false;
             }
@@ -100,10 +104,6 @@ public class BrowserActivity extends AppCompatActivity {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-//                Toast.makeText(BrowserActivity.this, "" + position,
-//                        Toast.LENGTH_SHORT).show();
-//                Toast.makeText(BrowserActivity.this, listOfImages.get(position),
-//                        Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(getApplicationContext(), PhotoViewerActivity.class);
 
                 i.putExtra(getString(R.string.image_path_string_to_show_in_viewer_activity),listOfImages.get(position));
@@ -125,14 +125,7 @@ public class BrowserActivity extends AppCompatActivity {
         sManager.registerListener(mySensorEventListener, sManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-//    @Override
-//    public void onStart(){
-//        super.onStart();
-//        updateGridView();
-//    }
-
-    private List<String> listOfImages;
-
+    //aktualizuje siatkę ze zdjęciami
     void updateGridView(){
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
@@ -149,18 +142,14 @@ public class BrowserActivity extends AppCompatActivity {
         imageAdapter.updateImageList(listOfImages);
         imageAdapter.getCount();
         imageAdapter.calculateMiniatures();
-        //imageAdapter.notifyDataSetChanged();
         gridview.setAdapter(imageAdapter);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.toolbar_browser, menu);
         return true;
     }
-
-    //final Activity activityForButton = this;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -173,15 +162,12 @@ public class BrowserActivity extends AppCompatActivity {
                         this,
                         FileBrowserActivity.class
                 );
-                //  fileExploreIntent.putExtra(
-                //  	ua.com.vassiliev.androidfilebrowser.FileBrowserActivity.startDirectoryParameter,
-                //      "/sdcard"
-                //  );//Here you can add optional start directory parameter, and file browser will start from that directory.
+
                 startActivityForResult(
                         fileExploreIntent,
                         REQUEST_CODE_PICK_DIR
                 );
-                //updateGridView();
+
                 return true;
             case R.id.action_sorting_options:
                 createAlertDialogWithRadioButtonGroup();
@@ -191,6 +177,7 @@ public class BrowserActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //"robi" zdjęcie
     void takePhoto()
     {
         CameraManager cameraManager = new CameraManager();
@@ -198,7 +185,7 @@ public class BrowserActivity extends AppCompatActivity {
         cameraManager.moveFileToWorkingLocationAndMarkIfExists(this, azimuth, pitch, roll);
     }
 
-    //Poniżej elementy potrzebne do wyboru katalogu
+    ////////////////////// Poniżej elementy potrzebne do wyboru katalogu //////////////////////
     private final int REQUEST_CODE_PICK_DIR = 1;
 
     @Override
@@ -226,6 +213,7 @@ public class BrowserActivity extends AppCompatActivity {
         }//if (requestCode == REQUEST_CODE_PICK_FILE_TO_SAVE_INTERNAL) {
         super.onActivityResult(requestCode, resultCode, data);
     }
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
     //Okienko ze szczegółami
     AlertDialog alertDialogDetails;
@@ -355,7 +343,7 @@ public class BrowserActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("Metoda sortowania");
+        builder.setTitle(R.string.title_of_sorting_window);
 
         builder.setSingleChoiceItems(radioTitles, checkedItem, new DialogInterface.OnClickListener() {
 

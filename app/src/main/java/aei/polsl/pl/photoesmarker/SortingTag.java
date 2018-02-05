@@ -1,3 +1,5 @@
+//Klasa zawierająca tagi wykorzystywane przy procesie sortowania
+
 package aei.polsl.pl.photoesmarker;
 
 

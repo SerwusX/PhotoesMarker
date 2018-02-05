@@ -9,4 +9,13 @@
     <string name="current_directory">Obecny katalog: </string>
     <string name="select">WYBIERZ</string>
     <string name="image_path_string_to_show_in_viewer_activity">image_path</string>
+    <string name="rate_colon">Ocena:</string>
+    <string name="rate_colon_empty">Ocena: brak</string>
+    <string name="quality_colon">Jakość:</string>
+    <string name="quality_colon_empty">Jakość: brak</string>
+    <string name="photo_evaluation">Ewaluacja zdjęcia</string>
+    <string name="rate_colon_space">Ocena:</string>
+    <string name="quality_colon_space">Jakość:</string>
+    <string name="OK">OK</string>
+    <string name="title_of_sorting_window">Metoda sortowania</string>
 </resources>

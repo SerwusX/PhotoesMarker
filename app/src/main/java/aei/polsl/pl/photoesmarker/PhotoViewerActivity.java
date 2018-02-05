@@ -1,22 +1,20 @@
+//Klasa aktywności do wyświetlania konkretnego zdjęcia
+
 package aei.polsl.pl.photoesmarker;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,29 +23,34 @@ import java.io.File;
 
 public class PhotoViewerActivity extends AppCompatActivity {
 
+    //zmienna przechowująca ścieżkę aktualnie wybranego pliku
     private String imagePathString;
+
+    //zmienna przechowująca ocenę zdjęcia, wykorzystywana w seekbarze
     private String rateOfPhotoStr = "";
+
+    //zmienna przechowująca jakość zdjęcia, wykorzystywana w seekbarze
     private String qualityOfPhotoStr = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Wyłączenie paska statusu
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_photo_viewer);
 
-
         View decorView = getWindow().getDecorView();
-        // Hide the status bar.
+
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
+        //Pobranie z poprzedniej aktywności ścieżki wybranego zdjęcia
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             imagePathString = extras.getString(getString(R.string.image_path_string_to_show_in_viewer_activity));
-            //The key argument here must match that used in the other activity
             Log.d("Co dostałem", imagePathString);
         }
 
@@ -55,8 +58,6 @@ public class PhotoViewerActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
                 createAlertDialogWithSeekbars();
             }
         });
@@ -76,6 +77,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
     }
 
+    //Funkcja tworząca okno dialogowe z ocenianiem
     private void createAlertDialogWithSeekbars(){
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(this);
         final LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -87,24 +89,24 @@ public class PhotoViewerActivity extends AppCompatActivity {
         final TextView item2 = (TextView)Viewlayout.findViewById(R.id.txtItem2); // txtItem2
 
         if(!rateOfPhotoStr.isEmpty()){
-            item1.setText("Ocena: " + rateOfPhotoStr);
+            item1.setText(getString(R.string.rate_colon) + rateOfPhotoStr);
         }
         else {
-            item1.setText("Ocena: brak");
+            item1.setText(R.string.rate_colon_empty);
         }
 
         if(!rateOfPhotoStr.isEmpty()){
-            item2.setText("Jakość: " + qualityOfPhotoStr);
+            item2.setText(getString(R.string.quality_colon) + qualityOfPhotoStr);
         }
         else {
-            item2.setText("Jakość: brak");
+            item2.setText(R.string.quality_colon_empty);
         }
 
         popDialog.setIcon(android.R.drawable.btn_star_big_on);
-        popDialog.setTitle("Ewaluacja zdjęcia");
+        popDialog.setTitle(R.string.photo_evaluation);
         popDialog.setView(Viewlayout);
 
-        //  seekBar1
+        //seekbar z oceną
         final SeekBar seek1 = (SeekBar) Viewlayout.findViewById(R.id.rate_seekbar);
         try {
             seek1.setProgress(Integer.valueOf(rateOfPhotoStr));
@@ -113,20 +115,17 @@ public class PhotoViewerActivity extends AppCompatActivity {
         }
         seek1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-                //Do something here with new value
-                item1.setText("Ocena: " + progress);
+                item1.setText(getString(R.string.rate_colon_space) + progress);
             }
 
             public void onStartTrackingTouch(SeekBar arg0) {
-                // TODO Auto-generated method stub
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
             }
         });
 
-        //  seekBar2
+        //seekbar z jakością
         final SeekBar seek2 = (SeekBar) Viewlayout.findViewById(R.id.quality_seekbar);
         try {
             seek2.setProgress(Integer.valueOf(qualityOfPhotoStr));
@@ -136,21 +135,19 @@ public class PhotoViewerActivity extends AppCompatActivity {
         seek2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
                 //Do something here with new value
-                item2.setText("Jakość: " + progress);
+                item2.setText(getString(R.string.quality_colon_space) + progress);
             }
 
             public void onStartTrackingTouch(SeekBar arg0) {
-                // TODO Auto-generated method stub
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
             }
         });
 
 
-        // Button OK
-        popDialog.setPositiveButton("OK",
+        //przycisk OK
+        popDialog.setPositiveButton(R.string.OK,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 

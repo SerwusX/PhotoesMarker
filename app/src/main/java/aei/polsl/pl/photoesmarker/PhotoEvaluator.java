@@ -1,16 +1,16 @@
+//Klasa do oceniania zdjęć.
+//Wykorzystywana przez klasą PhotoMarker
+
 package aei.polsl.pl.photoesmarker;
 
 import android.media.ExifInterface;
 
 import java.io.IOException;
 
-/**
- * Created by Andrzej on 2017-12-27.
- */
 
-public class PhotoEvaluator {
+class PhotoEvaluator {
 
-    public static void ratePhoto(String imageFilePath, int rating, int quality){
+    static void ratePhoto(String imageFilePath, int rating, int quality){
 
         String ratingAndQualityStr = String.valueOf(rating) + "," + String.valueOf(quality);
 

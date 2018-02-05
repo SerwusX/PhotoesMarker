@@ -1,3 +1,5 @@
+//klasa potrzebna do przetwarzania miniaturek
+
 package aei.polsl.pl.photoesmarker;
 
 import android.content.Context;
@@ -14,39 +16,42 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-import aei.polsl.pl.photoesmarker.ImageDecoder;
-import aei.polsl.pl.photoesmarker.R;
-
-/**
- * Created by Andrzej on 2018-02-01.
- */
-
 public class ImageAdapter extends BaseAdapter  {
+
+    //kontekst aktywności korzystającej z klasy
     private Context mContext;
+
+    //parametr ten pokazuje jak przeskalować zdjęcia żeby zmieściło się w gridView
     private int layoutParam;
 
-    public ImageAdapter(Context c) {
+    //konstruktor
+    ImageAdapter(Context c) {
         mContext = c;
         DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
         int screenWidth = metrics.widthPixels;
         layoutParam = screenWidth/mContext.getResources().getInteger(R.integer.number_of_columns_gridview);
     }
 
+    //zwraca wielkość listy ze zdjęciami
     public int getCount() {
         return imageList.size();
     }
 
+    //implementacja metody z interfejsu
     public Object getItem(int position) {
         return null;
     }
 
+    //implementacja metody z interfejsu
     public long getItemId(int position) {
         return 0;
     }
 
+    //lista z miniaturkami
     private List<Bitmap> miniatures;
 
-    public void calculateMiniatures(){
+    //liczy miniaturki zdjęć
+    void calculateMiniatures(){
         miniatures = new ArrayList<>();
         Thread[] threads = new Thread[getCount()];
         ImageDecoder[] imageDecoders = new ImageDecoder[getCount()];
@@ -58,7 +63,6 @@ public class ImageAdapter extends BaseAdapter  {
         }
 
         for (int i = 0; i < getCount(); i++){
-            Log.d("LICZĘ: ", Integer.toString(i));
             try {
                 threads[i].join();
             } catch (InterruptedException e) {
@@ -90,12 +94,14 @@ public class ImageAdapter extends BaseAdapter  {
         return imageView;
     }
 
-    public void updateImageList(List<String> newImageList){
+    //ustawia listę ze ścieżkami do zdjęć
+    void updateImageList(List<String> newImageList){
         imageList = newImageList;
     }
 
     //Wersja dla obrazów z resources
     //Parametrem jest lista ID obrazów z resources
+    //nieużywana
     private Bitmap decodeImageFromResources(Context context, List<Integer> list, int position){
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
@@ -114,6 +120,7 @@ public class ImageAdapter extends BaseAdapter  {
 
     //Wersja dla obrazów z pamięci
     //Parametrem jest lista bezwzględnych ścieżek jako stringi
+    //nieużywana
     private Bitmap decodeImageFromDeviceMemory(List<String> list, int position){
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
@@ -132,18 +139,7 @@ public class ImageAdapter extends BaseAdapter  {
 
     }
 
+    //lista ze ścieżkami do zdjęć
     private List<String> imageList = new ArrayList<String>();
-
-    private ArrayList<Integer> testList = new ArrayList<Integer>() {{
-        add(R.drawable.test_image); add(R.drawable.triss);
-        add(R.drawable.triss); add(R.drawable.triss);
-        add(R.drawable.triss); add(R.drawable.triss);
-        add(R.drawable.triss); add(R.drawable.triss);
-        add(R.drawable.triss); add(R.drawable.triss);
-        add(R.drawable.triss); add(R.drawable.triss);
-        add(R.drawable.triss); add(R.drawable.triss);
-        add(R.drawable.triss); add(R.drawable.triss);
-        add(R.drawable.triss); add(R.drawable.triss);
-    }};
 
 }

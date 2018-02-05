@@ -1,3 +1,5 @@
+//klasa potrzebna do przetwarzania miniaturek
+
 package aei.polsl.pl.photoesmarker;
 
 import android.graphics.Bitmap;
@@ -5,24 +7,30 @@ import android.graphics.BitmapFactory;
 
 import java.util.List;
 
-/**
- * Created by Andrzej on 2018-02-03.
- */
 
 public class ImageDecoder implements Runnable {
 
+    //lista ze ścieżkami do zdjęć
     private List<String> listOfImages;
+
+    //zmienna z pozycją zdjęcia w liście
     private int position;
+
+    //parametr ten pokazuje jak przeskalować zdjęcia żeby zmieściło się w gridView
     private int parameter;
+
+    //
     private volatile Bitmap result;
 
-    public ImageDecoder(List<String> list, int pos, int param){
+    //konstruktor
+    ImageDecoder(List<String> list, int pos, int param){
         listOfImages = list;
         position = pos;
         parameter = param;
     }
 
-    public Bitmap getResult(){
+    //zwraca przetworzoną miniaturę zdjęcia
+    Bitmap getResult(){
         return result;
     }
 

@@ -7,36 +7,36 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-
-/**
- * Created by Andrzej on 2017-12-28.
- */
 
 public class PathAcquirer {
 
+    //stała zawierająca ścieżkę do katalogu ze zdjęciami jako string
     private static final String defaultWorkingDirectory = Environment.DIRECTORY_DCIM;
+
+    //stałe zawierające klucze do zapisu i odczytu danych z preferences
     private static final String sharedPreferncesMainKey = "saved_path";
     private static final String sharedPreferncesKey = "current_path";
 
-    public static String getCurrentPathStr(Context context){
+    //zwraca obecną ścieżkę
+    static String getCurrentPathStr(Context context){
         SharedPreferences sharedPref = context.getSharedPreferences(sharedPreferncesMainKey, Context.MODE_PRIVATE);
         return sharedPref.getString(sharedPreferncesKey, defaultWorkingDirectory);
     }
 
-    public static void updateCurrentPath(Context context, String newWorkingDirectoryStr){
+    //aktualiazuje obecną ścieżkę
+    static void updateCurrentPath(Context context, String newWorkingDirectoryStr){
         SharedPreferences sharedPref = context.getSharedPreferences(sharedPreferncesMainKey, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(sharedPreferncesKey, newWorkingDirectoryStr);
         editor.commit();
     }
 
-    public static void resetCurrentPath(Context context){
+    //resetuje obecną ścieżkę, przydatne w przypadku błędów
+    private static void resetCurrentPath(Context context){
         SharedPreferences sharedPref = context.getSharedPreferences(sharedPreferncesMainKey, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         File path = Environment.getExternalStoragePublicDirectory(defaultWorkingDirectory);
@@ -44,7 +44,8 @@ public class PathAcquirer {
         editor.commit();
     }
 
-    public static List<String> getListOfEverythingFromDir(Context context){
+    //nieużywana, do przyszłych zastosowań
+    static List<String> getListOfEverythingFromDir(Context context){
         List<String> paths = new ArrayList<>();
         SharedPreferences sharedPref = context.getSharedPreferences(sharedPreferncesMainKey, Context.MODE_PRIVATE);
         String pathString = sharedPref.getString(sharedPreferncesKey, defaultWorkingDirectory);
@@ -57,7 +58,8 @@ public class PathAcquirer {
         return paths;
     }
 
-    public static List<String> getListOfDirsFromDir(Context context){
+    //nieużywana, do przyszłych zastosowań
+    static List<String> getListOfDirsFromDir(Context context){
         List<String> onlyDirStringPaths = new ArrayList<>();
         SharedPreferences sharedPref = context.getSharedPreferences(sharedPreferncesMainKey, Context.MODE_PRIVATE);
         String pathString = sharedPref.getString(sharedPreferncesKey, defaultWorkingDirectory);
@@ -80,7 +82,8 @@ public class PathAcquirer {
         return onlyDirStringPaths;
     }
 
-    public static List<String> getListOfJPGFilesFromDir(Context context){
+    //zwraca listę z ścieżkami jpgów z obecnej ścieżki
+    static List<String> getListOfJPGFilesFromDir(Context context){
         List<String> imagesPaths = new ArrayList<>();
         SharedPreferences sharedPref = context.getSharedPreferences(sharedPreferncesMainKey, Context.MODE_PRIVATE);
         String pathString = sharedPref.getString(sharedPreferncesKey, defaultWorkingDirectory);
@@ -95,7 +98,6 @@ public class PathAcquirer {
         try {
             for (File file : arrayOfImagesPathStrings){
                 imagesPaths.add(file.getAbsolutePath());
-                Log.d("TYLKO JPEGI", file.getAbsolutePath());
             }
         }catch (RuntimeException e){
             resetCurrentPath(context);

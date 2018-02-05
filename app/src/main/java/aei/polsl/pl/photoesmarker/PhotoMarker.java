@@ -1,3 +1,6 @@
+//Klasa do zarządzania markerami zdjęcia.
+//Umożliwia ich odczyt i dodawanie do wybranego zdjęcia.
+
 package aei.polsl.pl.photoesmarker;
 
 import android.Manifest;
@@ -22,13 +25,8 @@ import java.util.Calendar;
 import java.io.IOException;
 import java.util.Date;
 
-/**
- * Created by Andrzej on 2017-11-23.
- */
+class PhotoMarker {
 
-public class PhotoMarker {
-
-    //private String imageFilePath;
     private final String gpsLocationProvider = LocationManager.GPS_PROVIDER;
     private final String networkLocationProvider = LocationManager.NETWORK_PROVIDER;
 
@@ -47,12 +45,14 @@ public class PhotoMarker {
     // * TAG_GPS_PROCESSING_METHOD - zawiera dane żyroskopowe
     /////////////////////////////////////////////////////////////////////////////////////////
 
-    public static String getNameStr(String imageFilePath){
+    //pobranie nazwy pliku z stringa ze ścieżką
+    static String getNameStr(String imageFilePath){
         int index = imageFilePath.lastIndexOf("/");
         return imageFilePath.substring(index + 1);
     }
 
-    public static String getLatitudeStr(String imageFilePath){
+    //pobranie stringa z szerokością geograficzną
+    static String getLatitudeStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
             String latitudeInExifFormat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
@@ -64,7 +64,8 @@ public class PhotoMarker {
         return "";
     }
 
-    public static String getLongitudeStr(String imageFilePath){
+    //pobranie stringa z długością geograficzną
+    static String getLongitudeStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
             String longitudeInExifFormat = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
@@ -76,11 +77,14 @@ public class PhotoMarker {
         return "";
     }
 
-    public static String getOrientationStr(String imageFilePath){
+    //zwraca stringa z orientacją zdjęcia
+    static String getOrientationStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
             String orientationStr =  exif.getAttribute(ExifInterface.TAG_ORIENTATION);
             final int orientation = Integer.parseInt(orientationStr);
+
+            //wartość jest intem, zwracamy odpowiedniego stringa według dokumentacji
             switch (orientation){
                 case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
                     return "Flip horizontal";
@@ -109,7 +113,8 @@ public class PhotoMarker {
         return "Undefined";
     }
 
-    public static String getDateTimeStr(String imageFilePath){
+    //zwraca stringa z datą wykonania zdjęcia
+    static String getDateTimeStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
             return exif.getAttribute(ExifInterface.TAG_DATETIME);
@@ -120,6 +125,7 @@ public class PhotoMarker {
         return "";
     }
 
+    //zwraca stringa z półkulą (E/W)
     private static String getLatitudeRefStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
@@ -135,6 +141,7 @@ public class PhotoMarker {
         return "";
     }
 
+    //zwraca stringa z półkulą (N/S)
     private static String getLongitudeRefStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
@@ -150,6 +157,7 @@ public class PhotoMarker {
         return "";
     }
 
+    //nieużywana funkcja, pozostawiona na przyszły użytek
     private static String getAltitudeStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
@@ -165,6 +173,7 @@ public class PhotoMarker {
         }
     }
 
+    //nieużywana funkcja, pozostawiona na przyszły użytek
     private static String getAltitudeRefStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
@@ -183,7 +192,8 @@ public class PhotoMarker {
         }
     }
 
-    public static String getPhotoLengthStr(String imageFilePath){
+    //zwraca stringa z wysokością zdjęcia
+    static String getPhotoLengthStr(String imageFilePath){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
 
@@ -193,7 +203,8 @@ public class PhotoMarker {
         return String.valueOf(length);
     }
 
-    public static String getPhotoWidthStr(String imageFilePath){
+    //zwraca stringa z szerokością zdjęcia
+    static String getPhotoWidthStr(String imageFilePath){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
 
@@ -203,7 +214,8 @@ public class PhotoMarker {
         return String.valueOf(width);
     }
 
-    public static String getPhotoQualityStr(String imageFilePath){
+    //zwraca stringa z jakością zdjęcia
+    static String getPhotoQualityStr(String imageFilePath){
         int quality = PhotoEvaluator.getPhotoQuality(imageFilePath);
         if(quality != 0)
             return String.valueOf(quality);
@@ -211,7 +223,8 @@ public class PhotoMarker {
             return "";
     }
 
-    public static String getPhotoRatingStr(String imageFilePath){
+    //zwraca stringa z oceną zdjęcia
+    static String getPhotoRatingStr(String imageFilePath){
         int rating = PhotoEvaluator.getPhotoRating(imageFilePath);
         if(rating != 0)
             return String.valueOf(rating);
@@ -219,7 +232,8 @@ public class PhotoMarker {
             return "";
     }
 
-    public static String getAverageOfRatingAndQualityStr(String imageFilePath){
+    //zwraca stringa ze średnia jakości i oceny zdjęcia
+    static String getAverageOfRatingAndQualityStr(String imageFilePath){
         int rating = PhotoEvaluator.getPhotoRating(imageFilePath);
         int quality = PhotoEvaluator.getPhotoQuality(imageFilePath);
         int average = (rating + quality) / 2;
@@ -229,7 +243,8 @@ public class PhotoMarker {
             return "";
     }
 
-    public static String getGyroZValueStr(String imageFilePath){
+    //zwraca stringa z wartością Z z żyroskopu
+    static String getGyroZValueStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
             String gyroValuesStr = exif.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
@@ -245,7 +260,8 @@ public class PhotoMarker {
         }
     }
 
-    public static String getGyroYValueStr(String imageFilePath){
+    //zwraca stringa z wartością Y z żyroskopu
+    static String getGyroYValueStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
             String gyroValuesStr = exif.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
@@ -261,7 +277,8 @@ public class PhotoMarker {
         }
     }
 
-    public static String getGyroXValueStr(String imageFilePath){
+    //zwraca stringa z wartością X z żyroskopu
+    static String getGyroXValueStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
             String gyroValuesStr = exif.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
@@ -277,7 +294,7 @@ public class PhotoMarker {
         }
     }
 
-    //To nie będzie raczej potrzebne, ale na wszelki wypadek zostawiam
+    //nieużywana funkcja, pozostawiona na przyszły użytek
     private static String getAllGyroValuesAsOneStr(String imageFilePath){
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
@@ -289,8 +306,8 @@ public class PhotoMarker {
         return "";
     }
 
-    //Dodaje markery do zdjęcia
-    public void addMarkersToPhoto(Context context, String imageFilePath, double gyroX, double gyroY, double gyroZ) {
+    //dodaje markery do zdjęcia
+    void addMarkersToPhoto(Context context, String imageFilePath, double gyroX, double gyroY, double gyroZ) {
         try {
             ExifInterface exif = new ExifInterface(imageFilePath);
 
@@ -397,7 +414,7 @@ public class PhotoMarker {
 
 
             //Orientacja na podstawie żyroskopu - tutaj nie sprawdzamy, czy coś jest w tagu
-            //Format zapisu to będzie: "x,y,z" <- gdzie x to azimuth, y to pitch, z to roll
+            //Format zapisu to: "x,y,z" <- gdzie x to azimuth, y to pitch, z to roll
             String gyroValuesStr =
                     String.valueOf(gyroX) + "," + String.valueOf(gyroY) + "," + String.valueOf(gyroZ);
 
@@ -411,6 +428,7 @@ public class PhotoMarker {
 
     }
 
+    //zwraca stringa z obecną orientacją urządzenia
     private String readOrientation(Context context) {
         final int orientation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getOrientation();
         switch (orientation) {
@@ -426,6 +444,7 @@ public class PhotoMarker {
         }
     }
 
+    //zwraca stringa z obecną datą w odpowiednim formacie
     private String readDateTime() {
         Date currentTime = Calendar.getInstance().getTime();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:mm:dd hh:mm:ss");
@@ -434,6 +453,7 @@ public class PhotoMarker {
         return formattedDate;
     }
 
+    //zwraca stringa z wysokością zdjęcia ze ścieżki
     private String readImageLength(String path) {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -445,6 +465,7 @@ public class PhotoMarker {
         return length;
     }
 
+    //zwraca stringa z szerokością zdjęcia ze ścieżki
     private String readImageWidth(String path) {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -456,17 +477,13 @@ public class PhotoMarker {
         return width;
     }
 
+    //zwraca stringa z ostatnią znaną szerokością geograficzną urządzenia - jeżeli jest dostępna
     private String readGPSLatitude(Context context) {
         String latitude;
 
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
             latitude = null;
             return latitude;
         }
@@ -475,7 +492,6 @@ public class PhotoMarker {
                     locationManager.getLastKnownLocation(gpsLocationProvider);
             Location lastKnownLocationByNetwork =
                     locationManager.getLastKnownLocation(networkLocationProvider);
-
 
             Log.d("GPS", "GPS" + lastKnownLocationByGPS.toString());
             Log.d("NET", "NET" + lastKnownLocationByNetwork.toString());
@@ -497,17 +513,12 @@ public class PhotoMarker {
         }
     }
 
+    //zwraca stringa z ostatnią znaną długością geograficzną urządzenia - jeżeli jest dostępna
     private String readGPSLongitude(Context context){
         String longitude;
 
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             longitude = null;
             return longitude;
         }
@@ -534,16 +545,11 @@ public class PhotoMarker {
         }
     }
 
+    //nieużywana funkcja, pozostawiona na przyszły użytek
     private String readGPSAltitude(Context context){
         String altitude;
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             altitude = null;
             return altitude;
         }
@@ -569,6 +575,7 @@ public class PhotoMarker {
         }
     }
 
+    //konwertuje lokalizację na format exif z normalnego
     @NonNull
     private String convertPositionToExifFormat(double position) {
         StringBuilder stringBuilder = new StringBuilder(20);
@@ -589,10 +596,10 @@ public class PhotoMarker {
         stringBuilder.append(second);
         stringBuilder.append("/10000");
 
-
         return stringBuilder.toString();
     }
 
+    //konwertuje lokalizację na ludzki format z exifowego
     private static String convertPositionToNormalFormat(String positionInExifFormatStr){
         try{
             //Format zapisu to num1/denom1,num2/denom2,num3/denom
@@ -604,23 +611,14 @@ public class PhotoMarker {
             // >>> 18/1,27/1,389296/10000 <<<
             Log.d("GPS", "GPS" + positionInExifFormatStr);
 
-
             //Rozdzielenie na num i denom
             String[] partsDegrees = parts[0].split("/");
             String[] partsMinutes = parts[1].split("/");
             String[] partsSeconds = parts[2].split("/");
 
-            Log.d("stopnie", partsDegrees[0]);
-            Log.d("minuty", partsMinutes[0]);
-            Log.d("sekundy", partsSeconds[0]);
-
             double degrees = Double.parseDouble(partsDegrees[0]) / Double.parseDouble(partsDegrees[1]);
             double minutes = Double.parseDouble(partsMinutes[0]) / Double.parseDouble(partsMinutes[1]);
             double seconds = Double.parseDouble(partsSeconds[0]) / Double.parseDouble(partsSeconds[1]);
-
-            Log.d("stopnie2", String.valueOf(Double.parseDouble(partsDegrees[0]) / Double.parseDouble(partsDegrees[1])));
-            Log.d("minuty2", String.valueOf(Double.parseDouble(partsMinutes[0]) / Double.parseDouble(partsMinutes[1])));
-            Log.d("sekundy2", String.valueOf(Double.parseDouble(partsSeconds[0]) / Double.parseDouble(partsSeconds[1])));
 
             String finalValue = String.valueOf(degrees) + "° " + String.valueOf(minutes) + "' " + String.valueOf(seconds) + "''";
             return finalValue;

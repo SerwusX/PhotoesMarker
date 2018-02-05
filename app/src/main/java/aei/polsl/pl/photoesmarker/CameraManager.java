@@ -1,3 +1,5 @@
+//klasa do obsługi aparatu
+
 package aei.polsl.pl.photoesmarker;
 
 import android.app.Activity;
@@ -10,25 +12,23 @@ import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.text.SimpleDateFormat;
-
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import aei.polsl.pl.photoesmarker.PathAcquirer;
-import aei.polsl.pl.photoesmarker.PhotoMarker;
-
-/**
- * Created by Andrzej on 2017-12-28.
- */
 
 public class CameraManager {
+
+    //stała do zwracaniu informacji do aktywności
+    //generalnie niepotrzebna, ale musi być
     static final int REQUEST_TAKE_PHOTO = 3;
 
+    //ścieżka do zdjęcia
     static String mCurrentPhotoPath;
 
+    //tworzy plik ze zdjęciem
     private File createImageFile(Context context) throws IOException {
         Date currentTime = Calendar.getInstance().getTime();
         String timeStamp = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(currentTime);
@@ -45,6 +45,7 @@ public class CameraManager {
         return image;
     }
 
+    //tworzy "prośbę" utworzenia zdjęcia dla aplikacji
     private void dispatchTakePictureIntent(Context context, Activity activity) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -67,11 +68,13 @@ public class CameraManager {
         }
     }
 
-    public void takePhoto(Context context, Activity activity){
+    //wywołuje resztę metod, "robi zdjęcie"
+    void takePhoto(Context context, Activity activity){
         dispatchTakePictureIntent(context, activity);
     }
 
-    public void moveFileToWorkingLocationAndMarkIfExists(Context context, double azimuth, double pitch, double roll){
+    //przenosi zdjęcie po zrobieniu z plików aplikacji do wybranej lokalizacji i dodaje tagi
+    void moveFileToWorkingLocationAndMarkIfExists(Context context, double azimuth, double pitch, double roll){
         if(!TextUtils.isEmpty(mCurrentPhotoPath)){
             File from = new File(mCurrentPhotoPath);
 
@@ -83,8 +86,6 @@ public class CameraManager {
                 File to = new File(PathAcquirer.getCurrentPathStr(context) + "/" + from.getName());
 
                 from.renameTo(to);
-
-                Log.d("Sciezka zdjecia: ", from.getAbsolutePath());
 
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 Uri contentUri = Uri.fromFile(from);
