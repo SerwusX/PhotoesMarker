@@ -129,7 +129,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
         //  seekBar2
         final SeekBar seek2 = (SeekBar) Viewlayout.findViewById(R.id.quality_seekbar);
         try {
-            seek2.setProgress(Integer.valueOf(rateOfPhotoStr));
+            seek2.setProgress(Integer.valueOf(qualityOfPhotoStr));
         } catch (NumberFormatException e){
             seek2.setProgress(0);
         }
