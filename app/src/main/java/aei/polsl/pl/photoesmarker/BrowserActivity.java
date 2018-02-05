@@ -1,13 +1,18 @@
 package aei.polsl.pl.photoesmarker;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 public class BrowserActivity extends AppCompatActivity {
@@ -31,13 +37,41 @@ public class BrowserActivity extends AppCompatActivity {
     boolean reverseSorting = false;
     int checkedItem;
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+
+            );
+        }
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //checkedItem = 0;
         setContentView(R.layout.activity_browser);
+
+        verifyStoragePermissions(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Log.d("OBECNA ścieżka", PathAcquirer.getCurrentPathStr(this));
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -48,6 +82,16 @@ public class BrowserActivity extends AppCompatActivity {
                 takePhoto();
             }
         });
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                SoundPlayer.playSoundOrStopPlayingIfAlreadyPlaying();
+                return false;
+            }
+        });
+
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
         ImageAdapter imageAdapter = new ImageAdapter(this);
@@ -58,8 +102,8 @@ public class BrowserActivity extends AppCompatActivity {
                                     int position, long id) {
 //                Toast.makeText(BrowserActivity.this, "" + position,
 //                        Toast.LENGTH_SHORT).show();
-                Toast.makeText(BrowserActivity.this, listOfImages.get(position),
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(BrowserActivity.this, listOfImages.get(position),
+//                        Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(getApplicationContext(), PhotoViewerActivity.class);
 
                 i.putExtra(getString(R.string.image_path_string_to_show_in_viewer_activity),listOfImages.get(position));
@@ -95,7 +139,7 @@ public class BrowserActivity extends AppCompatActivity {
         ImageAdapter imageAdapter = new ImageAdapter(this);
         listOfImages = PathAcquirer.getListOfJPGFilesFromDir(this);
 
-        //Tu bedzie sortowanie
+        //sortowanie
         try {
             listOfImages = PhotoesSorter.sortListOfPhotoes(listOfImages, sortingTag, reverseSorting);
         } catch (IOException e) {
@@ -408,49 +452,49 @@ public class BrowserActivity extends AppCompatActivity {
                     case 14:
                         sortingTag = SortingTag.GYROSCOPE;
                         reverseSorting = false;
-                        checkedItem = 16;
+                        checkedItem = 14;
                         updateGridView();
                         break;
                     case 15:
                         sortingTag = SortingTag.GYROSCOPE;
                         reverseSorting = true;
-                        checkedItem = 17;
+                        checkedItem = 15;
                         updateGridView();
                         break;
                     case 16:
                         sortingTag = SortingTag.RATING;
                         reverseSorting = false;
-                        checkedItem = 18;
+                        checkedItem = 16;
                         updateGridView();
                         break;
                     case 17:
                         sortingTag = SortingTag.RATING;
                         reverseSorting = true;
-                        checkedItem = 19;
+                        checkedItem = 17;
                         updateGridView();
                         break;
                     case 18:
                         sortingTag = SortingTag.QUALITY;
                         reverseSorting = false;
-                        checkedItem = 20;
+                        checkedItem = 18;
                         updateGridView();
                         break;
                     case 19:
                         sortingTag = SortingTag.QUALITY;
                         reverseSorting = true;
-                        checkedItem = 21;
+                        checkedItem = 19;
                         updateGridView();
                         break;
                     case 20:
                         sortingTag = SortingTag.AVERAGE_RATING_AND_QUALITY;
                         reverseSorting = false;
-                        checkedItem = 22;
+                        checkedItem = 20;
                         updateGridView();
                         break;
                     case 21:
                         sortingTag = SortingTag.AVERAGE_RATING_AND_QUALITY;
                         reverseSorting = true;
-                        checkedItem = 23;
+                        checkedItem = 21;
                         updateGridView();
                         break;
                 }
@@ -528,6 +572,8 @@ public class BrowserActivity extends AppCompatActivity {
 
         CameraManager cameraManager = new CameraManager();
         cameraManager.moveFileToWorkingLocationAndMarkIfExists(this, azimuth, pitch, roll);
+
+        SoundPlayer.setContextAndSound(this, R.raw.fake_tutorial);
 
         updateGridView();
     }

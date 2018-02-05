@@ -90,9 +90,15 @@ public class PathAcquirer {
                 return name.toLowerCase().endsWith(".jpg");
             }
         });
-        for (File file : arrayOfImagesPathStrings){
-            imagesPaths.add(file.getAbsolutePath());
-            Log.d("TYLKO JPEGI", file.getAbsolutePath());
+
+
+        try {
+            for (File file : arrayOfImagesPathStrings){
+                imagesPaths.add(file.getAbsolutePath());
+                Log.d("TYLKO JPEGI", file.getAbsolutePath());
+            }
+        }catch (RuntimeException e){
+            resetCurrentPath(context);
         }
         return imagesPaths;
     }

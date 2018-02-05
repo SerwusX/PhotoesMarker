@@ -475,6 +475,11 @@ public class PhotoMarker {
                     locationManager.getLastKnownLocation(gpsLocationProvider);
             Location lastKnownLocationByNetwork =
                     locationManager.getLastKnownLocation(networkLocationProvider);
+
+
+            Log.d("GPS", "GPS" + lastKnownLocationByGPS.toString());
+            Log.d("NET", "NET" + lastKnownLocationByNetwork.toString());
+
             if(lastKnownLocationByGPS == null){
                 if(lastKnownLocationByNetwork == null){
                     latitude = null;
@@ -511,6 +516,7 @@ public class PhotoMarker {
                     locationManager.getLastKnownLocation(gpsLocationProvider);
             Location lastKnownLocationByNetwork =
                     locationManager.getLastKnownLocation(networkLocationProvider);
+
             if(lastKnownLocationByGPS == null){
                 if(lastKnownLocationByNetwork == null){
                     longitude = null;
@@ -581,7 +587,8 @@ public class PhotoMarker {
         stringBuilder.append(minute);
         stringBuilder.append("/1,");
         stringBuilder.append(second);
-        stringBuilder.append("/1000");
+        stringBuilder.append("/10000");
+
 
         return stringBuilder.toString();
     }
@@ -593,16 +600,33 @@ public class PhotoMarker {
             //Najpierw zmienne zostają rozdzielone do formatu num/denom
             String[] parts = positionInExifFormatStr.split(",");
 
+            //Tu jest ok
+            // >>> 18/1,27/1,389296/10000 <<<
+            Log.d("GPS", "GPS" + positionInExifFormatStr);
+
+
             //Rozdzielenie na num i denom
             String[] partsDegrees = parts[0].split("/");
             String[] partsMinutes = parts[1].split("/");
             String[] partsSeconds = parts[2].split("/");
 
+            Log.d("stopnie", partsDegrees[0]);
+            Log.d("minuty", partsMinutes[0]);
+            Log.d("sekundy", partsSeconds[0]);
+
             double degrees = Double.parseDouble(partsDegrees[0]) / Double.parseDouble(partsDegrees[1]);
             double minutes = Double.parseDouble(partsMinutes[0]) / Double.parseDouble(partsMinutes[1]);
             double seconds = Double.parseDouble(partsSeconds[0]) / Double.parseDouble(partsSeconds[1]);
 
-            return String.valueOf(degrees + minutes + seconds);
+            Log.d("stopnie2", String.valueOf(Double.parseDouble(partsDegrees[0]) / Double.parseDouble(partsDegrees[1])));
+            Log.d("minuty2", String.valueOf(Double.parseDouble(partsMinutes[0]) / Double.parseDouble(partsMinutes[1])));
+            Log.d("sekundy2", String.valueOf(Double.parseDouble(partsSeconds[0]) / Double.parseDouble(partsSeconds[1])));
+
+            String finalValue = String.valueOf(degrees) + "° " + String.valueOf(minutes) + "' " + String.valueOf(seconds) + "''";
+            return finalValue;
+
+            //return String.valueOf(degrees + minutes + seconds);
+
         }catch (NullPointerException e){
             return "";
         }
